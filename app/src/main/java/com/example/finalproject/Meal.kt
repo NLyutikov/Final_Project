@@ -5,7 +5,7 @@ data class Meal (
     val category: String,
     val area: String,
     val instructions: String,
-    val mealThum: String,
+    val mealImg: String,
     val tags: String,
     val youTube: String,
     val ingredients: List<Ingradient>
