@@ -6,22 +6,32 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
+import java.util.*
 
 internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
+
+    var data: LinkedList<Meal>? = null
+
+    fun setMeals(list: LinkedList<Meal>){
+        this.data = list
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BriefInfoAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_brief_info, parent, false)
         return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return data?.size ?: 0
     }
 
-    override fun onBindViewHolder(holder: BriefInfoAdapter.ViewHolder, position: Int) {
-        holder.name.text
-        holder.area.text
-        holder.category.text
-        holder.mealImg.background
+    override fun onBindViewHolder(holder: BriefInfoAdapter.ViewHolder, pos: Int) {
+        holder.name.text = data!![pos].name
+        holder.area.text = data!![pos].area
+        holder.category.text = data!![pos].category
+        Picasso.get().load(data!![pos].mealImg).into(holder.mealImg)
     }
 
     internal class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
