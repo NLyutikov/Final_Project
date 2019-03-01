@@ -11,9 +11,9 @@ import java.util.*
 
 internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
-    var data: LinkedList<Meal>? = null
+    private var data: LinkedList<MealNetwork>? = null
 
-    fun setMeals(list: LinkedList<Meal>){
+    fun setMeals(list: LinkedList<MealNetwork>){
         this.data = list
         notifyDataSetChanged()
     }
@@ -28,22 +28,22 @@ internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolde
     }
 
     override fun onBindViewHolder(holder: BriefInfoAdapter.ViewHolder, pos: Int) {
-        holder.name.text = data!![pos].name
-        holder.area.text = data!![pos].area
-        holder.category.text = data!![pos].category
-        Picasso.get().load(data!![pos].mealImg).into(holder.mealImg)
+        holder.name.text = data!![pos].strMeal
+        holder.area.text = data!![pos].strArea
+        holder.category.text = data!![pos].strCategory
+        Picasso.get().load(data!![pos].strMealThumb).into(holder.mealImg)
     }
 
-    internal class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    internal class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView
         val area: TextView
         val category: TextView
         val mealImg: ImageView
         init {
-            name = view.findViewById(R.id.title)
+            name = view.findViewById(R.id.meal_name)
             area = view.findViewById(R.id.meal_area)
             category = view.findViewById(R.id.meal_category)
-            mealImg = view.findViewById(R.id.imageView)
+            mealImg = view.findViewById(R.id.meal_img)
         }
     }
 }
