@@ -1,10 +1,7 @@
 package com.example.finalproject
 
-<<<<<<< HEAD
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-=======
->>>>>>> origin/main-fragment
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 

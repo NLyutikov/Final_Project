@@ -43,7 +43,7 @@ class Main2Activity : AppCompatActivity() {
             ingredientAdapter.dataSet = ingredients?.filter { it.strIngredient.startsWith(searchText, true) }
         }
 
-        retrofit.create(APIServise::class.java).getIngradients().enqueue(object: Callback<RemoteResponse<Ingredient>> {
+        retrofit.create(ApiService::class.java).getIngradients().enqueue(object: Callback<RemoteResponse<Ingredient>> {
             override fun onFailure(call: Call<RemoteResponse<Ingredient>>, t: Throwable) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
@@ -120,6 +120,8 @@ class IngredientAdapter(val ctx: Activity): RecyclerView.Adapter<MyHolder>() {
         }
     }
 }
+
+data class RemoteResponse<T>(val meals: List<T>)
 
 
 data class Ingredient (
