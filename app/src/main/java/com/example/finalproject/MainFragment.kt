@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,7 @@ const val RANDOM_MEALS_SIZE = 10
 
 const val LIST_TYPE = "LIST_TYPE"
 const val LIST_TYPE_RANDOM= 0
-const val LIST_TYPE_FILTRED = 1
+const val LIST_TYPE_BOOKMARK = 1
 
 
 abstract class ListFragment: Fragment() {
@@ -97,6 +98,7 @@ class FiltredListFragment: ListFragment() {
             onSuccess = { meals ->
                 adapter.setMeals(meals)
                 refreshLayout.isRefreshing = false
+
             },
             onFailure = { errorMessage ->
                 Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
@@ -114,6 +116,10 @@ class Filter: Fragment() {
         val view = inflater.inflate(R.layout.activity_main2, container, false)
         if(activity == null)
             return view
+
+        selectedIngredients.clear()
+        //for(chips in selectedIngredients)
+        //    createChips(activity as MainActivity, chips, view.findViewById(R.id.chipGroup))
 
         val ingredientAdapter = IngredientAdapter(activity as MainActivity)
 

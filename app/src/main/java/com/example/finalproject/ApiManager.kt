@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -48,24 +49,22 @@ object ApiManager {
         if(filter.ingredients.isEmpty() && filter.searchWord.isEmpty())
             throw Exception("filter cannot be empty")
 
-        val mainIngredient: String = filter.ingredients[0].strIngredient
         Thread {
-            val list = LinkedList<MealNetwork>()
             val response = if(filter.searchWord.isEmpty())
-                apiServise.getMealByIngredients(mainIngredient).execute()
-            else
-                apiServise.getMealByIngredients(mainIngredient).execute()
+                    apiServise.getMealByIngredients(filter.ingredients[0].strIngredient).execute()
+                else
+                    apiServise.getSearchMeal(filter.searchWord).execute()
 
-            if (response.isSuccessful) {
-                list.add(response.body()!!.meals[0])
+            Log.d("current", "response = " + response.body())
+            if (response.isSuccessful && !response.body()!!.meals.isNullOrEmpty()) {
+                activity?.runOnUiThread { onSuccess.invoke(LinkedList(response.body()!!.meals)) }
             } else {
                 activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
             }
 
-            activity?.runOnUiThread { onSuccess.invoke(list) }
         }.start()
     }
 }
 
 
-data class MealFilter(var ingredients: List<Ingredient> = ArrayList(), var searchWord: String = "")
+data class MealFilter(var ingredients: ArrayList<Ingredient> = ArrayList(), var searchWord: String = "")

@@ -28,7 +28,7 @@ val retrofit = Retrofit.Builder()
     .build()
 
 var ingredients: List<Ingredient>? = null
-val selectedIngredients: MutableList<Ingredient> = ArrayList<Ingredient>()
+val selectedIngredients: ArrayList<Ingredient> = ArrayList<Ingredient>()
 
 
 class Main2Activity : AppCompatActivity() {
@@ -102,24 +102,32 @@ class IngredientAdapter(val ctx: Activity): RecyclerView.Adapter<MyHolder>() {
 
             setOnClickListener {
 
-                if(!selectedIngredients.contains(item)) {
-                    val newChip = Chip(ctx)
-                    newChip.text = item.strIngredient
-                    newChip.isClickable = true
-                    newChip.isCheckable = false
-                    newChip.setChipDrawable(ChipDrawable.createFromResource(ctx, R.layout.chip_item))
-                    selectedIngredients.add(item)
-
-                    newChip.setOnCloseIconClickListener {
-                        chips.removeView(newChip)
-                        selectedIngredients.remove(item)
-                    }
-                    chips.addView(newChip)
-                }
+                createChips(ctx as MainActivity, item)
             }
         }
     }
 }
+
+
+fun createChips(ctx: MainActivity, item: Ingredient, viewWithChipsGroup: ChipGroup = ctx.findViewById<ChipGroup>(R.id.chipGroup)) {
+
+    if(selectedIngredients.contains(item))
+        return
+
+    val newChip = Chip(ctx)
+    newChip.text = item.strIngredient
+    newChip.isClickable = true
+    newChip.isCheckable = false
+    newChip.setChipDrawable(ChipDrawable.createFromResource(ctx, R.layout.chip_item))
+    selectedIngredients.add(item)
+
+    newChip.setOnCloseIconClickListener {
+        viewWithChipsGroup.removeView(newChip)
+        selectedIngredients.remove(item)
+    }
+    viewWithChipsGroup.addView(newChip)
+}
+
 
 data class RemoteResponse<T>(val meals: List<T>)
 
