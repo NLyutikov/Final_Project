@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import java.util.*
 
-internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
+class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
     private var data: LinkedList<MealNetwork>? = null
 
@@ -34,7 +34,7 @@ internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolde
         Picasso.get().load(data!![pos].strMealThumb).into(holder.mealImg)
     }
 
-    internal class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView
         val area: TextView
         val category: TextView

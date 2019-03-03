@@ -98,7 +98,7 @@ class IngredientAdapter(val ctx: Activity): RecyclerView.Adapter<MyHolder>() {
 
         holder.view.apply {
             findViewById<TextView>(R.id.ingredientTitle)?.text = item.strIngredient
-            val chips = (ctx as Main2Activity).findViewById<ChipGroup>(R.id.chipGroup)
+            val chips = (ctx as MainActivity).findViewById<ChipGroup>(R.id.chipGroup)
 
             setOnClickListener {
 
