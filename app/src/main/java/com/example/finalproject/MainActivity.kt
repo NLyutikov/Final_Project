@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -28,12 +29,17 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    fun toFragment(fragmentId: Int = 0) {
+    fun toFragment(fragmentId: Int = 0, setParams: ((fr: Fragment) -> Unit)? = null) {
         val newFragment: Fragment = when(fragmentId) {
             FRAGMENT_FILTER -> Filter()
             FRAGMENT_FILTRED_LIST -> FiltredListFragment()
             else -> MainFragment()
         }
+
+        Log.d("current", fragmentId.toString())
+        if(setParams != null)
+            setParams.invoke(newFragment)
+
         supportFragmentManager.beginTransaction().replace(R.id.fragments, newFragment).commit()
     }
 

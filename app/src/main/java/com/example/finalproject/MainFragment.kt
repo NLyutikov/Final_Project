@@ -87,10 +87,13 @@ class MainFragment : ListFragment() {
 
 
 class FiltredListFragment: ListFragment() {
+
+    val filter: MealFilter = MealFilter()
+
     override fun loadData() {
         ApiManager.getMeals(
             activity = activity,
-            filter = MealFilter(searchWord = "Beef"),
+            filter = filter,
             onSuccess = { meals ->
                 adapter.setMeals(meals)
                 refreshLayout.isRefreshing = false
@@ -141,7 +144,9 @@ class Filter: Fragment() {
             if(selectedIngredients.isEmpty()) {
                 Snackbar.make(goFilter, "please, select some ingredients", Snackbar.LENGTH_LONG).show()
             } else {
-
+                (activity as MainActivity).toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment) {
+                    (newFragment as FiltredListFragment).filter.ingredients = selectedIngredients
+                })
             }
 
         }
