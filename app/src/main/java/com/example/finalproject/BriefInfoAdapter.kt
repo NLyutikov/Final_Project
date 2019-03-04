@@ -5,11 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import java.util.*
 
-class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
+class BriefInfoAdapter(val ctx: MainActivity): RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
     private var data: LinkedList<MealNetwork>? = null
 
@@ -32,6 +33,11 @@ class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
         holder.area.text = data!![pos].strArea
         holder.category.text = data!![pos].strCategory
         Picasso.get().load(data!![pos].strMealThumb).into(holder.mealImg)
+        holder.itemView.setOnClickListener {
+            ctx.toFragment(FRAGMENT_DETAIL, {
+                (it as DetailFragment).meal = data!![pos]
+            })
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

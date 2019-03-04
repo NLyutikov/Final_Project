@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
@@ -38,10 +37,6 @@ class Main2Activity : AppCompatActivity() {
         setContentView(R.layout.activity_main2)
         val ingredientAdapter = IngredientAdapter(this)
 
-        findViewById<EditText>(R.id.chipsInput).addTextChangedListener {
-            val searchText = it.toString()
-            ingredientAdapter.dataSet = ingredients?.filter { it.strIngredient.startsWith(searchText, true) }
-        }
 
         retrofit.create(ApiService::class.java).getIngradients().enqueue(object: Callback<RemoteResponse<Ingredient>> {
             override fun onFailure(call: Call<RemoteResponse<Ingredient>>, t: Throwable) {
@@ -129,13 +124,5 @@ fun createChips(ctx: MainActivity, item: Ingredient, viewWithChipsGroup: ChipGro
 }
 
 
-data class RemoteResponse<T>(val meals: List<T>)
-
-
-data class Ingredient (
-    val idIngredient: Int,
-    val strIngredient: String,
-    val measure: String?
-)
 
 

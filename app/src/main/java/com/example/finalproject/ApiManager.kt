@@ -1,7 +1,10 @@
 package com.example.finalproject
 
+import android.app.Activity
+import android.content.Context
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import androidx.room.Room
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
@@ -18,6 +21,8 @@ object ApiManager {
             .build()
             .create(ApiService::class.java)
     }
+
+    private var db: MealsDatabase? = null
 
     fun getRandomMeals(
         activity: FragmentActivity?,
@@ -61,6 +66,28 @@ object ApiManager {
             } else {
                 activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
             }
+
+        }.start()
+    }
+
+    fun getIngredients(
+            ctx: Activity,
+            onSuccess: ((List<Ingredient>) -> Unit),
+            onFailure: (String) -> Unit) {
+
+        if(db == null)
+            db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).build()
+        Thread {
+            var ingredients: List<Ingredient>? = null
+            val remoteResponse = apiServise.getIngradients().execute()
+            if(!remoteResponse.isSuccessful || remoteResponse.body() == null || remoteResponse.body()!!.meals.isNullOrEmpty())
+                ingredients =  db!!.getLocalDao().getIngredients()
+            ingredients = remoteResponse.body()!!.meals
+
+            if(ingredients.isNullOrEmpty())
+                ctx.runOnUiThread{ onFailure.invoke("") }
+            else
+                ctx.runOnUiThread{ onSuccess.invoke(ingredients) }
 
         }.start()
     }

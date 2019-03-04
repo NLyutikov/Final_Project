@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 const val FRAGMENT_FILTER = 92
 const val FRAGMENT_FILTRED_LIST = 94
+const val FRAGMENT_DETAIL = 84
 
 class MainActivity : FragmentActivity() {
 
@@ -52,6 +53,7 @@ class MainActivity : FragmentActivity() {
         currentFragment = when(fragmentId) {
             FRAGMENT_FILTER -> Filter()
             FRAGMENT_FILTRED_LIST -> FiltredListFragment()
+            FRAGMENT_DETAIL -> DetailFragment()
             else -> MainFragment()
         }
 

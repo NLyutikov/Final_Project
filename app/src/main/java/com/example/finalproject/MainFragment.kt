@@ -1,14 +1,16 @@
 package com.example.finalproject
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.main_layout.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.lang.IllegalStateException
 
 const val RANDOM_MEALS_SIZE = 10
 
@@ -32,7 +30,7 @@ const val LIST_TYPE_BOOKMARK = 1
 abstract class ListFragment: Fragment() {
 
     protected lateinit var refreshLayout: SwipeRefreshLayout
-    protected val adapter = BriefInfoAdapter()
+    protected lateinit var adapter: BriefInfoAdapter
     protected var listType: Int = 0
 
 
@@ -41,6 +39,7 @@ abstract class ListFragment: Fragment() {
 
         if(arguments != null)
             listType = (arguments as Bundle).getInt(LIST_TYPE, LIST_TYPE_RANDOM)
+        adapter = BriefInfoAdapter(activity!! as MainActivity)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -123,11 +122,18 @@ class Filter: Fragment() {
 
         val ingredientAdapter = IngredientAdapter(activity as MainActivity)
 
-        view.findViewById<EditText>(R.id.chipsInput).addTextChangedListener {
-            val searchText = it.toString()
-            ingredientAdapter.dataSet = ingredients?.filter { it.strIngredient.startsWith(searchText, true) }
-        }
+        view.findViewById<EditText>(R.id.chipsInput).addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if(s == null)
+                    return
+                ingredientAdapter.dataSet = ingredients?.filter { it.strIngredient.startsWith(s.toString(), true) }
+            }
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+/*
         retrofit.create(ApiService::class.java).getIngradients().enqueue(object: Callback<RemoteResponse<Ingredient>> {
             override fun onFailure(call: Call<RemoteResponse<Ingredient>>, t: Throwable) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -145,6 +151,19 @@ class Filter: Fragment() {
                 }
             }
         })
+        */
+
+        ApiManager.getIngredients(
+            activity!!,
+            {loadedIngredients ->
+                ingredients = loadedIngredients
+                ingredientAdapter.dataSet = ingredients?.slice(0..10)
+                view.findViewById<RecyclerView>(R.id.vIngredients).apply {
+                    adapter = ingredientAdapter
+                    layoutManager = LinearLayoutManager(activity)
+                }
+            },
+            {errorMessage -> Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()})
 
         view.findViewById<Button>(R.id.goFilter).setOnClickListener {
             if(selectedIngredients.isEmpty()) {
@@ -156,6 +175,19 @@ class Filter: Fragment() {
             }
 
         }
+        return view
+    }
+}
+
+
+class DetailFragment: Fragment() {
+
+    var meal: MealNetwork? = null
+        set(value) {if(value != null) field = value}
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.meal_detail, container, false)
+        view.findViewById<TextView>(R.id.vMealTitle).text = meal?.strMeal
         return view
     }
 }
