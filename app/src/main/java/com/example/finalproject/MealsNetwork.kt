@@ -3,6 +3,11 @@ package com.example.finalproject
 data class MealsNetwork(
     val meals: List<MealNetwork>
 )
+//{
+//    fun toUI(): Meal {
+//        return meals[0].toUi()
+//    }
+//}
 
 data class MealNetwork(
     val idMeal: String,
@@ -54,3 +59,50 @@ data class MealNetwork(
     val strMeasure19: String,
     val strMeasure20: String
 )
+//{
+//    fun toUi(): Meal {
+//        return Meal(id = idMeal,
+//            name = strMeal,
+//            category = strCategory,
+//            area = strArea,
+//            instructions = strInstructions,
+//            img = strMealThumb,
+//            tags = strTags,
+//            youtube = strYoutube,
+//            ingredients = listOf(
+//                listOf(strIngredient1, strMeasure1),
+//                listOf(strIngredient2, strMeasure2),
+//                listOf(strIngredient3, strMeasure3),
+//                listOf(strIngredient4, strMeasure4),
+//                listOf(strIngredient5, strMeasure5),
+//                listOf(strIngredient6, strMeasure6),
+//                listOf(strIngredient7, strMeasure7),
+//                listOf(strIngredient8, strMeasure8),
+//                listOf(strIngredient9, strMeasure9),
+//                listOf(strIngredient10, strMeasure10),
+//                listOf(strIngredient11, strMeasure11),
+//                listOf(strIngredient12, strMeasure12),
+//                listOf(strIngredient13, strMeasure13),
+//                listOf(strIngredient14, strMeasure14),
+//                listOf(strIngredient15, strMeasure15),
+//                listOf(strIngredient16, strMeasure16),
+//                listOf(strIngredient17, strMeasure17),
+//                listOf(strIngredient18, strMeasure18),
+//                listOf(strIngredient19, strMeasure19),
+//                listOf(strIngredient20, strMeasure20)
+//            )
+//        )
+//    }
+//}
+
+//data class Meal(
+//    val id: String,
+//    val name: String,
+//    val category: String,
+//    val area: String,
+//    val instructions: String,
+//    val img: String,
+//    val tags: String,
+//    val youtube: String,
+//    val ingredients: List<List<String>>
+//)
