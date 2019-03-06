@@ -27,6 +27,7 @@
                 android:id="@+id/meal_name"
                 android:textSize="20sp"
                 android:gravity="start"
+                android:singleLine="true"
                 android:layout_marginStart="22dp"
                 app:layout_constraintStart_toEndOf="@+id/meal_img"
                 app:layout_constraintTop_toTopOf="parent"
