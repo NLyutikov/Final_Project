@@ -17,14 +17,13 @@ const val RANDOM_MEALS_SIZE = 10
 
 const val LIST_TYPE = "LIST_TYPE"
 const val LIST_TYPE_RANDOM= 0
-const val LIST_TYPE_BOOKMARK = 1
 
 
 abstract class ListFragment: Fragment() {
 
     protected lateinit var refreshLayout: SwipeRefreshLayout
     protected lateinit var adapter: BriefInfoAdapter
-    protected var listType: Int = 0
+    private var listType: Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +70,8 @@ class MainFragment : ListFragment() {
                 refreshLayout.isRefreshing = false
             },
             onFailure = { errorMessage ->
-                Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, resources.getString(R.string.err_with_descr, errorMessage), Toast.LENGTH_LONG)
+                    .show()
                 refreshLayout.isRefreshing = false
             }
         )
@@ -93,7 +93,8 @@ class FiltredListFragment: ListFragment() {
 
             },
             onFailure = { errorMessage ->
-                Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, resources.getString(R.string.err_with_descr, errorMessage), Toast.LENGTH_LONG)
+                    .show()
                 refreshLayout.isRefreshing = false
             }
         )

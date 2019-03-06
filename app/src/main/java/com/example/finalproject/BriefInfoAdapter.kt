@@ -5,12 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import java.util.*
 
-class BriefInfoAdapter(val ctx: MainActivity): RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
+class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
     private var data: LinkedList<MealNetwork>? = null
 

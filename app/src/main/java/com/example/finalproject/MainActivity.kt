@@ -1,10 +1,8 @@
 package com.example.finalproject
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,7 +36,7 @@ class MainActivity : FragmentActivity() {
                 toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment){
                     (newFragment as FiltredListFragment).filter.ingredients.clear()
 
-                    (newFragment as FiltredListFragment).filter.searchWord =
+                    newFragment.filter.searchWord =
                             findViewById<EditText>(R.id.searchInput)?.text.toString()
                 })
             } else {
@@ -57,8 +55,7 @@ class MainActivity : FragmentActivity() {
             else -> MainFragment()
         }
 
-        if(setParams != null)
-            setParams.invoke(currentFragment)
+        setParams?.invoke(currentFragment)
 
         supportFragmentManager.beginTransaction().replace(R.id.fragments, currentFragment).commit()
     }

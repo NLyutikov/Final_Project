@@ -1,13 +1,10 @@
 package com.example.finalproject
 
 import android.app.Activity
-import android.content.Context
-import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.room.Room
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
 import java.util.*
 
 private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"
@@ -52,7 +49,7 @@ object ApiManager {
         onFailure: (String) -> Unit
     ) {
         if(filter.ingredients.isEmpty() && filter.searchWord.isEmpty())
-            throw Exception("filter cannot be empty")
+            throw Exception(activity?.resources?.getString(R.string.err_empty_filter))
 
         Thread {
             val response = if(filter.searchWord.isEmpty())
@@ -60,7 +57,6 @@ object ApiManager {
                 else
                     apiServise.getSearchMeal(filter.searchWord).execute()
 
-            Log.d("current", "response = " + response.body())
             if (response.isSuccessful && !response.body()!!.meals.isNullOrEmpty()) {
                 activity?.runOnUiThread { onSuccess.invoke(LinkedList(response.body()!!.meals)) }
             } else {
@@ -78,7 +74,7 @@ object ApiManager {
         if(db == null)
             db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).build()
         Thread {
-            var ingredients: List<Ingredient>? = null
+            var ingredients: List<Ingredient>?
             val remoteResponse = apiServise.getIngradients().execute()
             if(!remoteResponse.isSuccessful || remoteResponse.body() == null || remoteResponse.body()!!.meals.isNullOrEmpty())
                 ingredients =  db!!.getLocalDao().getIngredients()

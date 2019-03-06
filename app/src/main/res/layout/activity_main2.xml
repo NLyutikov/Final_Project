@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".Main2Activity">
+        tools:context=".MainActivity">
 
 
 
@@ -16,13 +16,15 @@
             android:id="@+id/chipsInput"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:hint="xxxxxxx"
+            android:hint="@string/search"
+            android:inputType="text"
+            android:autofillHints="@string/search"
     />
 
     <Button
             android:layout_width="230dp"
             android:layout_height="wrap_content"
-            android:text="filter"
+            android:text="@string/filter"
             android:id="@+id/goFilter"
             app:layout_constraintStart_toEndOf="@id/chipsInput"
             app:layout_constraintTop_toTopOf="parent"

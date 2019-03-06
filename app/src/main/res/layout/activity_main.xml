@@ -15,8 +15,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/toFilterView"
-                android:text="filter"
-                android:background="#ffffff"
+                android:text="@string/filter"
+                android:background="@color/colorBtn"
         />
 
         <EditText
@@ -24,15 +24,17 @@
                 android:layout_height="wrap_content"
                 android:ems="5"
                 android:id="@+id/searchInput"
-                android:hint="search"
+                android:hint="@string/search"
+                android:inputType="text"
+                android:autofillHints="@string/search"
         />
 
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/goSearch"
-                android:text="search"
-                android:background="#ffffff"
+                android:text="@string/search"
+                android:background="@color/colorBtn"
                 android:gravity="end"
         />
 
