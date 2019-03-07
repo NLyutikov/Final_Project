@@ -1,6 +1,5 @@
 package com.example.finalproject
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +8,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import java.util.*
 
 class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
-    private var data: LinkedList<MealNetwork>? = null
+    private var data: List<MealNetwork>? = null
 
-    fun setMeals(list: LinkedList<MealNetwork>){
+    fun setMeals(list: List<MealNetwork>) {
         this.data = list
         notifyDataSetChanged()
     }
@@ -30,8 +28,6 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
     }
 
     override fun onBindViewHolder(holder: BriefInfoAdapter.ViewHolder, pos: Int) {
-
-        Log.d("current", "onBindViewHolder" + data!![pos])
 
         holder.name.text = data!![pos].strMeal
         holder.area.text = data!![pos].strArea

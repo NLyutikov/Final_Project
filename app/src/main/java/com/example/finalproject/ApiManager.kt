@@ -7,6 +7,7 @@ import androidx.room.Room
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import kotlin.collections.ArrayList
 
 private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"
 
@@ -29,7 +30,6 @@ object ApiManager {
         onFailure: (String) -> Unit
     ) {
         Thread {
-            Log.d("current", "getRandomMeals")
             val list = LinkedList<MealNetwork>()
             for (i in 0 until quantity) {
                 val response = apiServise.getRandomMeal().execute()
@@ -47,9 +47,10 @@ object ApiManager {
     fun getMeals(
         activity: FragmentActivity?,
         filter: MealFilter,
-        onSuccess: ((LinkedList<MealNetwork>) -> Unit),
+        onSuccess: ((List<MealNetwork>) -> Unit),
         onFailure: (String) -> Unit
     ) {
+
         if (filter.ingredients.isEmpty() && filter.searchWord.isEmpty() && !filter.favorite) {
             activity?.runOnUiThread {
                 onFailure.invoke(
@@ -61,23 +62,33 @@ object ApiManager {
 
         Thread {
             if (filter.favorite) {
-                if (db == null)
-                    db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME).build()
-                db!!.getLocalDao().getMeals()
-            } else {
 
+                if (db == null)
+                    db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME)
+                        .allowMainThreadQueries().build()
+
+                val localResponse = db!!.getLocalDao().getMeals()
+                activity?.runOnUiThread { onSuccess.invoke(localResponse) }
+                Log.d("current", "DB getMeals " + localResponse)
+
+            } else {
                 val response =
                     when {
-                        filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients.joinToString { it.strIngredient + " " }).execute()
+                        //filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients.joinToString(separator = " ") { it.strIngredient}).execute()
+                        filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients[0].strIngredient).execute()
                         else -> apiServise.getSearchMeal(filter.searchWord).execute()
                     }
 
-                if (response.isSuccessful && !response.body()!!.meals.isNullOrEmpty()) {
-                    activity?.runOnUiThread { onSuccess.invoke(LinkedList(response.body()!!.meals)) }
+                if (response.isSuccessful) {
+                    activity?.runOnUiThread {
+                        onSuccess.invoke(if (response.body() == null || response.body()!!.meals.isNullOrEmpty()) ArrayList() else response.body()!!.meals)
+                    }
                 } else {
                     activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
                 }
             }
+
+            //
 
         }.start()
     }
@@ -88,7 +99,7 @@ object ApiManager {
             onFailure: (String) -> Unit) {
 
         if(db == null)
-            db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).build()
+            db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries().build()
         Thread {
             var ingredients: List<Ingredient>?
             val remoteResponse = apiServise.getIngradients().execute()
@@ -107,11 +118,24 @@ object ApiManager {
     fun updateFavorite(ctx: Activity, meal: MealNetwork) {
         Thread {
 
+            Log.d("current", "updateFavorite " + meal)
+
             if (db == null)
-                db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).build()
+                db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries()
+                    .build()
+
+            if (meal.strCategory == null)
+                meal.strCategory = ""
+            if (meal.strArea == null)
+                meal.strArea = ""
+            if (meal.strInstructions == null)
+                meal.strInstructions = ""
 
             meal.isBookmarked = if (meal.isBookmarked == null) true else !(meal.isBookmarked as Boolean)
-            db!!.getLocalDao().addMeals(meal)
+            if (meal.isBookmarked as Boolean)
+                db!!.getLocalDao().addMeals(meal)
+            else
+                db!!.getLocalDao().removeMeals(meal)
 
         }.start()
     }

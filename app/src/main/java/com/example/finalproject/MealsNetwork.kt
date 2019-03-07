@@ -15,9 +15,9 @@ data class MealsNetwork(
 data class MealNetwork(
     @PrimaryKey(autoGenerate = true) val idMeal: Int,
     val strMeal: String,
-    val strCategory: String,
-    val strArea: String,
-    val strInstructions: String,
+    var strCategory: String = "",
+    var strArea: String = "",
+    var strInstructions: String = "",
     val strMealThumb: String? = null,
     val strTags: String? = null,
     val strYoutube: String? = null,
@@ -128,8 +128,11 @@ interface LocalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addIngredients(vararg ingr: Ingredient)
 
-    @Query("SELECT * FROM ${LocalDao.TABLE_MEALS} WHERE :where")
-    fun getMeals(where: String = "isBookmarked==true"): List<MealNetwork>
+    @Query("SELECT * FROM ${LocalDao.TABLE_MEALS}")
+    fun getMeals(): List<MealNetwork>
+
+    @Delete
+    fun removeMeals(vararg meal: MealNetwork)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addMeals(vararg meal: MealNetwork)

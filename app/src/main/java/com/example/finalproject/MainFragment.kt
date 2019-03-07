@@ -1,7 +1,6 @@
 package com.example.finalproject
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,7 +66,6 @@ class MainFragment : ListFragment() {
             activity = activity,
             quantity = RANDOM_MEALS_SIZE,
             onSuccess = { meals ->
-                Log.d("current", "MainFragment loadData onSuccess" + meals)
                 adapter.setMeals(meals)
                 refreshLayout.isRefreshing = false
             },
@@ -106,11 +104,23 @@ class FiltredListFragment: ListFragment() {
 
 class FavoriteListFragment : ListFragment() {
 
-    val filter: MealFilter = MealFilter()
+    val filter: MealFilter = MealFilter(favorite = true)
 
     override fun loadData() {
+        ApiManager.getMeals(
+            activity = activity,
+            filter = filter,
+            onSuccess = { meals ->
+                adapter.setMeals(meals)
+                refreshLayout.isRefreshing = false
 
-        refreshLayout.isRefreshing = false
+            },
+            onFailure = { errorMessage ->
+                Toast.makeText(activity, resources.getString(R.string.err_with_descr, errorMessage), Toast.LENGTH_LONG)
+                    .show()
+                refreshLayout.isRefreshing = false
+            }
+        )
     }
 }
 
