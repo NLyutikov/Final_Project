@@ -17,6 +17,7 @@
                 android:id="@+id/toFilterView"
                 android:text="@string/filter"
                 android:background="@color/colorBtn"
+                android:textColor="@color/colorPrimaryDark"
         />
 
         <EditText
@@ -35,6 +36,16 @@
                 android:id="@+id/goSearch"
                 android:text="@string/search"
                 android:background="@color/colorBtn"
+                android:textColor="@color/colorBtnText"
+                android:gravity="end"
+        />
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/goFavorite"
+                android:text="@string/favorite"
+                android:background="@color/colorBtn"
+                android:textColor="@color/colorBtnText"
                 android:gravity="end"
         />
 

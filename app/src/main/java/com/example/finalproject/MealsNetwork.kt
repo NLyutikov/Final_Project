@@ -125,9 +125,14 @@ interface LocalDao {
     @Query("SELECT * FROM ${LocalDao.TABLE_INGREDIENT}")
     fun getIngredients(): List<Ingredient>
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addIngredients(vararg ingr: Ingredient)
+
+    @Query("SELECT * FROM ${LocalDao.TABLE_MEALS} WHERE :where")
+    fun getMeals(where: String = "isBookmarked==true"): List<MealNetwork>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addMeals(vararg meal: MealNetwork)
 }
 
 @Database(entities = [Ingredient::class, MealNetwork::class], version = 1)

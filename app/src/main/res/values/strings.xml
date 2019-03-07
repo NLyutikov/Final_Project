@@ -2,6 +2,7 @@
     <string name="app_name">Final Project</string>
 
     <string name="search">search</string>
+    <string name="favorite">favorite</string>
     <string name="filter">filter</string>
     <string name="err_empty_filter">filter cannot be empty</string>
     <string name="err_with_descr">Oops, error: %s</string>

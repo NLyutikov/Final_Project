@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 const val FRAGMENT_FILTER = 92
 const val FRAGMENT_FILTRED_LIST = 94
 const val FRAGMENT_DETAIL = 84
+const val FRAGMENT_FAVORITE = 88
 
 class MainActivity : FragmentActivity() {
 
@@ -45,6 +46,12 @@ class MainActivity : FragmentActivity() {
                         findViewById<EditText>(R.id.searchInput).text.toString()
             }
         }
+
+        findViewById<Button>(R.id.goFavorite).setOnClickListener {
+            toFragment(FRAGMENT_FAVORITE)
+        }
+
+        toFragment(0)
     }
 
     fun toFragment(fragmentId: Int = 0, setParams: ((fr: Fragment) -> Unit)? = null) {
@@ -52,6 +59,7 @@ class MainActivity : FragmentActivity() {
             FRAGMENT_FILTER -> Filter()
             FRAGMENT_FILTRED_LIST -> FiltredListFragment()
             FRAGMENT_DETAIL -> DetailFragment()
+            FRAGMENT_FAVORITE -> FavoriteListFragment()
             else -> MainFragment()
         }
 

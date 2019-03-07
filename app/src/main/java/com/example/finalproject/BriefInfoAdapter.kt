@@ -1,10 +1,12 @@
 package com.example.finalproject
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -28,6 +30,9 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
     }
 
     override fun onBindViewHolder(holder: BriefInfoAdapter.ViewHolder, pos: Int) {
+
+        Log.d("current", "onBindViewHolder" + data!![pos])
+
         holder.name.text = data!![pos].strMeal
         holder.area.text = data!![pos].strArea
         holder.category.text = data!![pos].strCategory
@@ -37,6 +42,10 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
                 (it as DetailFragment).meal = data!![pos]
             })
         }
+        holder.btnFavorite.setOnClickListener {
+            ApiManager.updateFavorite(ctx, data!![pos])
+        }
+
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -44,11 +53,13 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         val area: TextView
         val category: TextView
         val mealImg: ImageView
+        val btnFavorite: AppCompatImageButton
         init {
             name = view.findViewById(R.id.meal_name)
             area = view.findViewById(R.id.meal_area)
             category = view.findViewById(R.id.meal_category)
             mealImg = view.findViewById(R.id.meal_img)
+            btnFavorite = view.findViewById(R.id.favorites_button)
         }
     }
 }
