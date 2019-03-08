@@ -12,8 +12,8 @@
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="15"
-            android:id="@+id/chipsInput"
+            android:ems="10"
+            android:id="@+id/chips_input"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:hint="@string/search"
@@ -22,20 +22,22 @@
     />
 
     <Button
-            android:layout_width="230dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/filter"
-            android:id="@+id/goFilter"
-            app:layout_constraintStart_toEndOf="@id/chipsInput"
+            android:id="@+id/go_filter"
+            android:textColor="@color/colorBtnText"
+            android:background="@color/colorBtn"
+            app:layout_constraintStart_toEndOf="@id/chips_input"
             app:layout_constraintTop_toTopOf="parent"
     />
 
     <com.google.android.material.chip.ChipGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/chipsInput"
+            app:layout_constraintTop_toBottomOf="@id/chips_input"
             app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/chipGroup"
+            android:id="@+id/chip_group"
     >
 
     </com.google.android.material.chip.ChipGroup>
@@ -43,10 +45,9 @@
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/chipGroup"
+            app:layout_constraintTop_toBottomOf="@id/chip_group"
             app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/vIngredients"
-            android:background="@color/colorPrimary"
+            android:id="@+id/v_ingredients"
     />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

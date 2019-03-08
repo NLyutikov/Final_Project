@@ -2,9 +2,9 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:id="@+id/ingredientTitle"
-          android:textColor="#ffffff"
-          android:background="@color/colorPrimary"
+          android:id="@+id/ingredient_title"
+          android:textColor="@color/colorBtn"
+          android:layout_margin="10dp"
           android:textSize="22sp"
 >
 
