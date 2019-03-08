@@ -7,13 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import java.util.*
 
 internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
-    private var data: LinkedList<MealNetwork>? = null
+    private var data: List<MealNetwork>? = null
 
-    fun setMeals(list: LinkedList<MealNetwork>){
+    fun setMeals(list: List<MealNetwork>){
         this.data = list
         notifyDataSetChanged()
     }

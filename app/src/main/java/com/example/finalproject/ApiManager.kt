@@ -32,4 +32,20 @@ object ApiManager {
             }
         })
     }
+
+    fun getSearchMeals(
+        text: String,
+        onSuccess: (List<MealNetwork>) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        apiServise.getSearchMeal(text).enqueue(object : Callback<MealsNetwork> {
+            override fun onFailure(call: Call<MealsNetwork>, t: Throwable) {
+                onFailure.invoke(t.toString())
+            }
+
+            override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                onSuccess.invoke(response.body()!!.meals)
+            }
+        })
+    }
 }

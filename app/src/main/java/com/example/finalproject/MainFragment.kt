@@ -2,14 +2,16 @@ package com.example.finalproject
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
 import kotlinx.android.synthetic.main.main_layout.view.*
 import java.util.concurrent.TimeUnit
 
@@ -34,6 +36,36 @@ class MainFragment : Fragment() {
         refreshLayout.setOnRefreshListener {
             getRandomMealsAndShowThem()
         }
+
+        Observable.create(ObservableOnSubscribe<String> { subscriber ->
+            view.toolbar_search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    subscriber.onNext(query!!)
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    subscriber.onNext(newText!!)
+                    return false
+                }
+            })
+        })
+            .map { text -> text.toLowerCase().trim() }
+            .debounce(250, TimeUnit.MILLISECONDS)
+            .distinctUntilChanged()
+            .filter { text -> text.isNotBlank() }
+            .filter { text -> text.length > 1 }
+            .subscribe { text ->
+                ApiManager.getSearchMeals(
+                    text = text,
+                    onSuccess = { meals ->
+                        adapter.setMeals(meals)
+                    },
+                    onFailure = { errorMessage ->
+                        Snackbar.make(View(activity), errorMessage, Snackbar.LENGTH_SHORT)
+                    }
+                )
+            }
 
         return view
     }
