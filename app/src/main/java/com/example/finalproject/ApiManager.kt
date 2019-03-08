@@ -1,5 +1,8 @@
 package com.example.finalproject
 
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import android.app.Activity
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
@@ -24,24 +27,32 @@ object ApiManager {
     private var db: MealsDatabase? = null
 
     fun getRandomMeals(
-        activity: FragmentActivity?,
-        quantity: Int,
-        onSuccess: ((LinkedList<MealNetwork>) -> Unit),
+        onSuccess: ((List<MealNetwork>) -> Unit),
         onFailure: (String) -> Unit
     ) {
-        Thread {
-            val list = LinkedList<MealNetwork>()
-            for (i in 0 until quantity) {
-                val response = apiServise.getRandomMeal().execute()
-                if (response.isSuccessful) {
-                    list.add(response.body()!!.meals[0])
-                } else {
-                    activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
-                    break
-                }
+        apiServise.getRandomMeal().enqueue(object : Callback<MealsNetwork> {
+            override fun onFailure(call: Call<MealsNetwork>, t: Throwable) {
+                onFailure.invoke(t.toString())
             }
-            activity?.runOnUiThread { onSuccess.invoke(list) }
-        }.start()
+            override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                onSuccess.invoke(response.body()!!.meals)
+            }
+        })
+    }
+
+    fun getSearchMeals(
+        text: String,
+        onSuccess: (List<MealNetwork>) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        apiServise.getSearchMeal(text).enqueue(object : Callback<MealsNetwork> {
+            override fun onFailure(call: Call<MealsNetwork>, t: Throwable) {
+                onFailure.invoke(t.toString())
+            }
+            override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                onSuccess.invoke(response.body()!!.meals)
+            }
+        })
     }
 
     fun getMeals(
@@ -50,7 +61,6 @@ object ApiManager {
         onSuccess: ((List<MealNetwork>) -> Unit),
         onFailure: (String) -> Unit
     ) {
-
         if (filter.ingredients.isEmpty() && filter.searchWord.isEmpty() && !filter.favorite) {
             activity?.runOnUiThread {
                 onFailure.invoke(
@@ -62,15 +72,12 @@ object ApiManager {
 
         Thread {
             if (filter.favorite) {
-
                 if (db == null)
                     db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME)
                         .allowMainThreadQueries().build()
-
                 val localResponse = db!!.getLocalDao().getMeals()
                 activity?.runOnUiThread { onSuccess.invoke(localResponse) }
                 Log.d("current", "DB getMeals " + localResponse)
-
             } else {
                 val response =
                     when {
@@ -78,7 +85,6 @@ object ApiManager {
                         filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients[0].strIngredient).execute()
                         else -> apiServise.getSearchMeal(filter.searchWord).execute()
                     }
-
                 if (response.isSuccessful) {
                     activity?.runOnUiThread {
                         onSuccess.invoke(if (response.body() == null || response.body()!!.meals.isNullOrEmpty()) ArrayList() else response.body()!!.meals)
@@ -87,9 +93,6 @@ object ApiManager {
                     activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
                 }
             }
-
-            //
-
         }.start()
     }
 

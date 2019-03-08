@@ -3,6 +3,7 @@ package com.example.finalproject
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
@@ -13,13 +14,14 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
 
     private var data: List<MealNetwork>? = null
 
-    fun setMeals(list: List<MealNetwork>) {
+    fun setMeals(list: List<MealNetwork>){
         this.data = list
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BriefInfoAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_brief_info, parent, false)
+        val view = LayoutInflater.from(parent.context).
+            inflate(R.layout.item_brief_info, parent, false)
         return ViewHolder(view)
     }
 
@@ -38,6 +40,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
                 (it as DetailFragment).meal = data!![pos]
             })
         }
+      //Не забудь, кнопки фаворитов теперь чекбоксы и я не уверен, что это вообще здесь нужно(Никита) 
         holder.btnFavorite.setOnClickListener {
             ApiManager.updateFavorite(ctx, data!![pos])
         }
@@ -49,7 +52,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         val area: TextView
         val category: TextView
         val mealImg: ImageView
-        val btnFavorite: AppCompatImageButton
+        val btnFavorite: CheckBox
         init {
             name = view.findViewById(R.id.meal_name)
             area = view.findViewById(R.id.meal_area)
