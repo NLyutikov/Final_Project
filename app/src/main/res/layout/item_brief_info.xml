@@ -35,11 +35,11 @@
                 app:layout_constraintBottom_toTopOf="@id/line"
                 app:layout_constraintEnd_toStartOf="@+id/favorites_button"/>
 
-        <ImageButton
+        <CheckBox
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:id="@+id/favorites_button"
-                android:background="@drawable/baseline_favorite_border_24"
+                android:button="@drawable/btn_check"
                 android:layout_margin="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

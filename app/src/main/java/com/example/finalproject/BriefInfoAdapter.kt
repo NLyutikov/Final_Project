@@ -18,7 +18,8 @@ internal class BriefInfoAdapter: RecyclerView.Adapter<BriefInfoAdapter.ViewHolde
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BriefInfoAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_brief_info, parent, false)
+        val view = LayoutInflater.from(parent.context).
+            inflate(R.layout.item_brief_info, parent, false)
         return ViewHolder(view)
     }
 
