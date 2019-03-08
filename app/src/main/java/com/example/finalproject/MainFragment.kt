@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,15 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.android.synthetic.main.main_layout.view.*
-import java.lang.IllegalStateException
+import java.util.concurrent.TimeUnit
 
-private const val RANDOM_MEALS_SIZE = 10
-
+@Suppress("DEPRECATION")
 class MainFragment : Fragment() {
 
     private lateinit var refreshLayout: SwipeRefreshLayout
     private val adapter = BriefInfoAdapter()
 
+    @SuppressLint("CheckResult", "ResourceAsColor")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.main_layout, container, false)
 
@@ -27,10 +28,8 @@ class MainFragment : Fragment() {
         mealList.layoutManager = LinearLayoutManager(activity)
         refreshLayout = view.refresh
 
-
         getRandomMealsAndShowThem()
         refreshLayout.isRefreshing = true
-
 
         refreshLayout.setOnRefreshListener {
             getRandomMealsAndShowThem()
@@ -38,10 +37,9 @@ class MainFragment : Fragment() {
 
         return view
     }
-    private fun getRandomMealsAndShowThem(){
+
+    private fun getRandomMealsAndShowThem() {
         ApiManager.getRandomMeals(
-            activity = activity,
-            quantity = RANDOM_MEALS_SIZE,
             onSuccess = { meals ->
                 adapter.setMeals(meals)
                 refreshLayout.isRefreshing = false
