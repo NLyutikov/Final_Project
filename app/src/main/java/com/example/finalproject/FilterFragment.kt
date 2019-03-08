@@ -1,5 +1,8 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.finalproject
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
@@ -7,7 +10,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -17,23 +19,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.snackbar.Snackbar
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class Filter : Fragment() {
+class FilterFragment : Fragment() {
+    private var adapter = BriefInfoAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.activity_main2, container, false)
+        val view = inflater.inflate(R.layout.filter_layout, container, false)
         if (activity == null)
             return view
 
-        selectedIngredients.clear()
-        //for(chips in selectedIngredients)
-        //    createChips(activity as MainActivity, chips, view.findViewById(R.id.chipGroup))
+        val mealList =
+            view.findViewById<RecyclerView>(R.id.main_recycler)// <--- Условный RecyclerView, нужно будет создать свой здесь
+        mealList.adapter = adapter
+        mealList.layoutManager = LinearLayoutManager(activity)
 
-        val ingredientAdapter = IngredientAdapter(activity as MainActivity)
+        selectedIngredients.clear()
+        for (chips in selectedIngredients)
+            createChips(activity as MainActivity, chips, view.findViewById(R.id.chipGroup))
+
+        val ingredientAdapter = IngredientAdapter(activity as MainActivity) //Зачем привязка к MainActivity
 
         view.findViewById<EditText>(R.id.chipsInput).addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -66,34 +73,50 @@ class Filter : Fragment() {
         })
         */
 
-        ApiManager.getIngredients(
-            activity!!,
-            { loadedIngredients ->
-                ingredients = loadedIngredients
-                ingredientAdapter.dataSet = ingredients?.slice(0..10)
-                view.findViewById<RecyclerView>(R.id.vIngredients).apply {
-                    adapter = ingredientAdapter
-                    layoutManager = LinearLayoutManager(activity)
-                }
-            },
-            { errorMessage -> Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show() })
+//Закомментил, так как, не стал разбираться в коде.
 
-        view.findViewById<Button>(R.id.goFilter).setOnClickListener {
-            if (selectedIngredients.isEmpty()) {
-                Snackbar.make(view.findViewById(R.id.goFilter), "please, select some ingredients", Snackbar.LENGTH_LONG)
-                    .show()
-            } else {
-                (activity as MainActivity).toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment) {
-                    (newFragment as FiltredListFragment).filter.ingredients = selectedIngredients
-                })
-            }
-
-        }
+//        ApiManager.getIngredients(
+//            activity!!,
+//            { loadedIngredients ->
+//                ingredients = loadedIngredients
+//                ingredientAdapter.dataSet = ingredients?.slice(0..10)
+//                view.findViewById<RecyclerView>(R.id.vIngredients).apply {
+//                    adapter = ingredientAdapter
+//                    layoutManager = LinearLayoutManager(activity)
+//                }
+//            },
+//            { errorMessage -> Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show() })
+//
+//        view.findViewById<Button>(R.id.goFilter).setOnClickListener {
+//            if (selectedIngredients.isEmpty()) {
+//                Snackbar.make(view.findViewById(R.id.goFilter), "please, select some ingredients", Snackbar.LENGTH_LONG)
+//                    .show()
+//            } else {
+//                (activity as MainActivity).toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment) {
+//                    (newFragment as FiltredListFragment).filter.ingredients = selectedIngredients
+//                })
+//            }
+//
+//        }
         return view
+    }
+
+    //Вообщем, надо вставить эту функцию так, чтобы она срабатывала после выборы чипсы, тебе в твоём коде виднее будет
+    private fun getFilteredMealsAndShowThem() {
+        ApiManager.getFilteredMeals(
+            activity = activity,
+            filter = MealFilter(selectedIngredients),
+            onSuccess = { meals ->
+                adapter.setMeals(meals)
+            },
+            onFailure = { errorMessage ->
+                Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
+            }
+        )
     }
 }
 
-
+//Не уверен, зачем тебе здесь ещё 1 вызов, но его надо убрать, все действия, по получению данных с API происходят в ApiManager'e
 val retrofit = Retrofit.Builder()
     .baseUrl("https://www.themealdb.com/api/json/v1/1/")
     .addConverterFactory(GsonConverterFactory.create())
@@ -102,9 +125,9 @@ val retrofit = Retrofit.Builder()
 var ingredients: List<Ingredient>? = null
 val selectedIngredients: ArrayList<Ingredient> = ArrayList<Ingredient>()
 
-
 class MyHolder(val view: View) : RecyclerView.ViewHolder(view)
 
+//Адаптер для ингредиентов лучше вывести в отдельный файл!
 class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 
     var dataSet: List<Ingredient>? = null
@@ -127,6 +150,7 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 
         val item: Ingredient = dataSet?.get(position) ?: throw Exception("ingredientAdapter dataSet item is null")
 
+        //сhips'a нигде не юзается, возможно потому, что я что-то удалил, если что, извиняюсь
         holder.view.apply {
             findViewById<TextView>(R.id.ingredientTitle)?.text = item.strIngredient
             val chips = (ctx as MainActivity).findViewById<ChipGroup>(R.id.chipGroup)
@@ -140,10 +164,11 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 }
 
 
+@SuppressLint("ResourceType")
 fun createChips(
     ctx: MainActivity,
     item: Ingredient,
-    viewWithChipsGroup: ChipGroup = ctx.findViewById<ChipGroup>(R.id.chipGroup)
+    viewWithChipsGroup: ChipGroup = ctx.findViewById(R.id.chipGroup)
 ) {
 
     if (selectedIngredients.contains(item))

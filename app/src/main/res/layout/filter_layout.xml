@@ -5,9 +5,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
-
-
+        tools:context=".MainActivity"
+        tools:ignore="UnusedAttribute">
 
     <EditText
             android:layout_width="wrap_content"
@@ -18,8 +17,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:hint="@string/search"
             android:inputType="text"
-            android:autofillHints="@string/search"
-    />
+            android:autofillHints="@string/search"/>
 
     <Button
             android:layout_width="230dp"
@@ -36,9 +34,8 @@
             app:layout_constraintTop_toBottomOf="@id/chipsInput"
             app:layout_constraintStart_toStartOf="parent"
             android:id="@+id/chipGroup"
-    >
+    />
 
-    </com.google.android.material.chip.ChipGroup>
 
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -48,5 +45,4 @@
             android:id="@+id/vIngredients"
             android:background="@color/colorPrimary"
     />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

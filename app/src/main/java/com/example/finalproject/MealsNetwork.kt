@@ -111,7 +111,7 @@ data class MealNetwork(
 //    val ingredients: List<List<String>>
 //)
 
-
+//Завтра займусь тем, что повыше
 
 
 @Dao
@@ -138,10 +138,10 @@ interface LocalDao {
     fun addMeals(vararg meal: MealNetwork)
 }
 
-@Database(entities = [Ingredient::class, MealNetwork::class], version = 1)
-abstract class MealsDatabase: RoomDatabase() {
-    abstract fun getLocalDao(): LocalDao
-}
+//@Database(entities = [Ingredient::class, MealNetwork::class], version = 1)
+//abstract class MealsDatabase: RoomDatabase() {
+//    abstract fun getLocalDao(): LocalDao
+//}
 
 data class RemoteResponse<T>(val meals: List<T>)
 
