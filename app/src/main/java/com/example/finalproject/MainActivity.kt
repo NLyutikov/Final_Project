@@ -12,10 +12,15 @@ const val FRAGMENT_FILTRED_LIST = 94
 const val FRAGMENT_DETAIL = 84
 const val FRAGMENT_FAVORITE = 88
 
+const val PREV_LIST_FRAGMENT = -2
+
+
 class MainActivity : FragmentActivity() {
 
     var currentFragment: Fragment = MainFragment()
         private set(value) {field = value}
+
+    private lateinit var currentListFragment: ListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +65,23 @@ class MainActivity : FragmentActivity() {
             FRAGMENT_FILTRED_LIST -> FiltredListFragment()
             FRAGMENT_DETAIL -> DetailFragment()
             FRAGMENT_FAVORITE -> FavoriteListFragment()
+            PREV_LIST_FRAGMENT -> currentListFragment
             else -> MainFragment()
         }
 
         setParams?.invoke(currentFragment)
+        if (currentFragment is ListFragment)
+            currentListFragment = currentFragment as ListFragment
 
         supportFragmentManager.beginTransaction().replace(R.id.fragments, currentFragment).commit()
     }
 
+    override fun onBackPressed() {
+        when {
+            currentFragment is DetailFragment -> toFragment(PREV_LIST_FRAGMENT)
+            currentFragment !is MainFragment -> toFragment()
+            else -> super.onBackPressed()
+        }
+
+    }
 }
