@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
@@ -49,7 +49,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         val area: TextView
         val category: TextView
         val mealImg: ImageView
-        val btnFavorite: AppCompatImageButton
+        val btnFavorite: AppCompatCheckBox
         init {
             name = view.findViewById(R.id.meal_name)
             area = view.findViewById(R.id.meal_area)

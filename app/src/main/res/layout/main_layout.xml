@@ -4,20 +4,13 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <androidx.appcompat.widget.Toolbar
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            android:id="@+id/main_toolbar"
-            android:background="@color/colorPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/refresh"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-    </androidx.appcompat.widget.Toolbar>
+
+
+    <include layout="@layout/toolbal"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:id="@+id/refresh"
             app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
             app:layout_constraintStart_toStartOf="parent"

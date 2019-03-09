@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
@@ -11,18 +12,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
-class Filter : Fragment() {
+class Filter : FragmentWithToolbar() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.activity_main2, container, false)
@@ -98,11 +96,6 @@ class Filter : Fragment() {
 }
 
 
-val retrofit = Retrofit.Builder()
-    .baseUrl("https://www.themealdb.com/api/json/v1/1/")
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-
 var ingredients: List<Ingredient>? = null
 val selectedIngredients: ArrayList<Ingredient> = ArrayList<Ingredient>()
 
@@ -144,6 +137,7 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 }
 
 
+@SuppressLint("ResourceType")
 fun createChips(
     ctx: MainActivity,
     item: Ingredient,

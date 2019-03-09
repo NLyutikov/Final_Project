@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ApiService {
-    @GET("random.php")
+    @GET("randomselection.php")
     fun getRandomMeal(): Call<MealsNetwork>
     @GET("search.php")
     fun getSearchMeal(@Query("s")sch: String): Call<MealsNetwork>

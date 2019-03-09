@@ -3,8 +3,8 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:id="@+id/ingredient_title"
-          android:textColor="@color/colorBtn"
-          android:layout_margin="10dp"
+          android:textColor="#ffffff"
+          android:background="@color/colorPrimary"
           android:textSize="22sp"
 >
 
