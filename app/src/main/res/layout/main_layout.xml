@@ -6,7 +6,7 @@
         android:layout_height="match_parent">
 
 
-    <include layout="@layout/toolbal"/>
+    <include layout="@layout/toolbar"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="0dp"

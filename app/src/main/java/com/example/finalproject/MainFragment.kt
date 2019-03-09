@@ -203,14 +203,3 @@ class FavoriteListFragment : ListFragment() {
 }
 
 
-class DetailFragment : FragmentWithToolbar() {
-
-    var meal: MealNetwork? = null
-        set(value) {if(value != null) field = value}
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.meal_detail, container, false)
-        view.findViewById<TextView>(R.id.v_meal_title).text = meal?.strMeal
-        return view
-    }
-}
