@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
@@ -11,18 +12,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
-class Filter : Fragment() {
+class Filter : FragmentWithToolbar() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.activity_main2, container, false)
@@ -35,7 +33,7 @@ class Filter : Fragment() {
 
         val ingredientAdapter = IngredientAdapter(activity as MainActivity)
 
-        view.findViewById<EditText>(R.id.chipsInput).addTextChangedListener(object : TextWatcher {
+        view.findViewById<EditText>(R.id.chips_input).addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (s == null)
                     return
@@ -71,16 +69,20 @@ class Filter : Fragment() {
             { loadedIngredients ->
                 ingredients = loadedIngredients
                 ingredientAdapter.dataSet = ingredients?.slice(0..10)
-                view.findViewById<RecyclerView>(R.id.vIngredients).apply {
+                view.findViewById<RecyclerView>(R.id.v_ingredients).apply {
                     adapter = ingredientAdapter
                     layoutManager = LinearLayoutManager(activity)
                 }
             },
             { errorMessage -> Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show() })
 
-        view.findViewById<Button>(R.id.goFilter).setOnClickListener {
+        view.findViewById<Button>(R.id.go_filter).setOnClickListener {
             if (selectedIngredients.isEmpty()) {
-                Snackbar.make(view.findViewById(R.id.goFilter), "please, select some ingredients", Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    view.findViewById(R.id.go_filter),
+                    "please, select some ingredients",
+                    Snackbar.LENGTH_LONG
+                )
                     .show()
             } else {
                 (activity as MainActivity).toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment) {
@@ -93,11 +95,6 @@ class Filter : Fragment() {
     }
 }
 
-
-val retrofit = Retrofit.Builder()
-    .baseUrl("https://www.themealdb.com/api/json/v1/1/")
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
 
 var ingredients: List<Ingredient>? = null
 val selectedIngredients: ArrayList<Ingredient> = ArrayList<Ingredient>()
@@ -128,8 +125,8 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
         val item: Ingredient = dataSet?.get(position) ?: throw Exception("ingredientAdapter dataSet item is null")
 
         holder.view.apply {
-            findViewById<TextView>(R.id.ingredientTitle)?.text = item.strIngredient
-            val chips = (ctx as MainActivity).findViewById<ChipGroup>(R.id.chipGroup)
+            findViewById<TextView>(R.id.ingredient_title)?.text = item.strIngredient
+            val chips = (ctx as MainActivity).findViewById<ChipGroup>(R.id.chip_group)
 
             setOnClickListener {
 
@@ -140,10 +137,11 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 }
 
 
+@SuppressLint("ResourceType")
 fun createChips(
     ctx: MainActivity,
     item: Ingredient,
-    viewWithChipsGroup: ChipGroup = ctx.findViewById<ChipGroup>(R.id.chipGroup)
+    viewWithChipsGroup: ChipGroup = ctx.findViewById<ChipGroup>(R.id.chip_group)
 ) {
 
     if (selectedIngredients.contains(item))

@@ -1,11 +1,9 @@
 package com.example.finalproject
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import kotlinx.android.synthetic.main.activity_main.*
 
 const val FRAGMENT_FILTER = 92
 const val FRAGMENT_FILTRED_LIST = 94
@@ -15,7 +13,7 @@ const val FRAGMENT_FAVORITE = 88
 const val PREV_LIST_FRAGMENT = -2
 
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity(), ClickCallback {
 
     var currentFragment: Fragment = MainFragment()
         private set(value) {field = value}
@@ -25,36 +23,6 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
-        val fragmentId = R.id.fragments
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(fragmentId, currentFragment).commit()
-
-        toFilterView.setOnClickListener {
-            toFragment(FRAGMENT_FILTER)
-        }
-
-        findViewById<Button>(R.id.goSearch).setOnClickListener {
-            if(currentFragment !is FiltredListFragment) {
-
-                //  we cannot display filtred list without filter (required to data loading)
-                toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment){
-                    (newFragment as FiltredListFragment).filter.ingredients.clear()
-
-                    newFragment.filter.searchWord =
-                            findViewById<EditText>(R.id.searchInput)?.text.toString()
-                })
-            } else {
-                (currentFragment as FiltredListFragment).filter.ingredients.clear()
-                (currentFragment as FiltredListFragment).filter.searchWord =
-                        findViewById<EditText>(R.id.searchInput).text.toString()
-            }
-        }
-
-        findViewById<Button>(R.id.goFavorite).setOnClickListener {
-            toFragment(FRAGMENT_FAVORITE)
-        }
 
         toFragment(0)
     }
@@ -84,4 +52,16 @@ class MainActivity : FragmentActivity() {
         }
 
     }
+
+    //  not working
+    override fun onClick(who: View) {
+        when (who.id) {
+            R.id.toolbar_favorites -> toFragment(FRAGMENT_FAVORITE)
+            R.id.toolbar_filter -> toFragment(FRAGMENT_FILTER)
+        }
+    }
+}
+
+interface ClickCallback {
+    fun onClick(who: View)
 }
