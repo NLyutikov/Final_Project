@@ -1,7 +1,6 @@
 package com.example.finalproject
 
 import android.app.Activity
-import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.room.Room
 import retrofit2.Call
@@ -48,44 +47,48 @@ object ApiManager {
     ) {
 
         Thread {
-            when {
-                (filter.ingredients.isEmpty() && filter.searchWord.isEmpty() && !filter.favorite) -> {
-                    activity?.runOnUiThread {
-                        onFailure.invoke(
-                            activity?.resources?.getString(R.string.err_empty_filter) ?: ""
-                        )
-                    }
+            try {
 
-                }
-
-                (filter.favorite) -> {
-
-                    if (db == null)
-                        db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME)
-                            .allowMainThreadQueries().build()
-
-                    val localResponse = db!!.getLocalDao().getMeals()
-                    activity?.runOnUiThread { onSuccess.invoke(localResponse) }
-                    Log.d("current", "DB getMeals " + localResponse)
-
-                }
-
-                else -> {
-                    val response =
-                        when {
-                            //filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients.joinToString(separator = " ") { it.strIngredient}).execute()
-                            filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients[0].strIngredient).execute()
-                            else -> apiServise.getSearchMeal(filter.searchWord).execute()
-                        }
-
-                    if (response.isSuccessful) {
+                when {
+                    (filter.ingredients.isEmpty() && filter.searchWord.isEmpty() && !filter.favorite) -> {
                         activity?.runOnUiThread {
-                            onSuccess.invoke(if (response.body() == null || response.body()!!.meals.isNullOrEmpty()) ArrayList() else response.body()!!.meals)
+                            onFailure.invoke(
+                                activity?.resources?.getString(R.string.err_empty_filter) ?: ""
+                            )
                         }
-                    } else {
-                        activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
+
+                    }
+
+                    (filter.favorite) -> {
+
+                        if (db == null)
+                            db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME)
+                                .allowMainThreadQueries().build()
+
+                        val localResponse = db!!.getLocalDao().getMeals()
+                        activity?.runOnUiThread { onSuccess.invoke(localResponse) }
+
+                    }
+
+                    else -> {
+                        val response =
+                            when {
+                                //filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients.joinToString(separator = " ") { it.strIngredient}).execute()
+                                filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients[0].strIngredient).execute()
+                                else -> apiServise.getSearchMeal(filter.searchWord).execute()
+                            }
+
+                        if (response.isSuccessful) {
+                            activity?.runOnUiThread {
+                                onSuccess.invoke(if (response.body() == null || response.body()!!.meals.isNullOrEmpty()) ArrayList() else response.body()!!.meals)
+                            }
+                        } else {
+                            activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
+                        }
                     }
                 }
+            } catch (e: java.lang.Exception) {
+                activity?.runOnUiThread { onFailure.invoke(e.toString()) }
             }
 
         }.start()
@@ -100,15 +103,21 @@ object ApiManager {
             db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries().build()
         Thread {
             var ingredients: List<Ingredient>?
-            val remoteResponse = apiServise.getIngradients().execute()
-            if(!remoteResponse.isSuccessful || remoteResponse.body() == null || remoteResponse.body()!!.meals.isNullOrEmpty())
-                ingredients =  db!!.getLocalDao().getIngredients()
-            ingredients = remoteResponse.body()!!.meals
+            try {
+                val remoteResponse = apiServise.getIngradients().execute()
+                //if (!remoteResponse.isSuccessful || remoteResponse.body() == null || remoteResponse.body()!!.meals.isNullOrEmpty())
 
-            if(ingredients.isNullOrEmpty())
-                ctx.runOnUiThread{ onFailure.invoke("") }
+                ingredients = remoteResponse.body()!!.meals
+
+            } catch (e: Exception) {
+
+                ingredients = db!!.getLocalDao().getIngredients()
+            }
+
+            if (ingredients.isNullOrEmpty())
+                ctx.runOnUiThread { onFailure.invoke("") }
             else {
-                ctx.runOnUiThread { onSuccess.invoke(ingredients) }
+                ctx.runOnUiThread { onSuccess.invoke(ingredients as List<Ingredient>) }
                 db!!.getLocalDao().addIngredients(*ingredients.toTypedArray())
             }
 
