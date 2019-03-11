@@ -7,19 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
 import kotlinx.android.synthetic.main.main_layout.view.*
-
-const val RANDOM_MEALS_SIZE = 10
-
+import kotlinx.android.synthetic.main.toolbar.view.*
+import java.util.concurrent.TimeUnit
 
 const val LIST_TYPE = "LIST_TYPE"
 const val LIST_TYPE_RANDOM= 0
-
 
 abstract class FragmentWithToolbar : Fragment() {
 
@@ -73,7 +75,6 @@ abstract class ListFragment : FragmentWithToolbar() {
     abstract fun loadData()
 }
 
-
 @Suppress("DEPRECATION")
 class MainFragment : ListFragment() {
 
@@ -103,7 +104,7 @@ class MainFragment : ListFragment() {
             getRandomMealsAndShowThem()
         }
 
-        /*
+
         Observable.create(ObservableOnSubscribe<String> { subscriber ->
             view.toolbar_search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -134,7 +135,7 @@ class MainFragment : ListFragment() {
                     }
                 )
             }
-*/
+
         setToolbarActions(view)
         return view
     }
@@ -155,7 +156,6 @@ class MainFragment : ListFragment() {
         )
     }
 }
-
 
 class FiltredListFragment: ListFragment() {
 
