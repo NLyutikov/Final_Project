@@ -16,7 +16,9 @@ const val PREV_LIST_FRAGMENT = -2
 class MainActivity : AppCompatActivity(), ClickCallback {
 
     var currentFragment: Fragment = MainFragment()
-        private set(value) {field = value}
+        private set(value) {
+            field = value
+        }
 
     private lateinit var currentListFragment: ListFragment
 
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity(), ClickCallback {
     }
 
     fun toFragment(fragmentId: Int = 0, setParams: ((fr: Fragment) -> Unit)? = null) {
-        currentFragment = when(fragmentId) {
+        currentFragment = when (fragmentId) {
             FRAGMENT_FILTER -> Filter()
             FRAGMENT_FILTRED_LIST -> FiltredListFragment()
             FRAGMENT_DETAIL -> DetailFragment()

@@ -52,6 +52,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         val category: TextView
         val mealImg: ImageView
         val btnFavorite: AppCompatCheckBox
+
         init {
             name = view.findViewById(R.id.meal_name)
             area = view.findViewById(R.id.meal_area)

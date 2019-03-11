@@ -120,11 +120,12 @@ object ApiManager {
     }
 
     fun getIngredients(
-            ctx: Activity,
-            onSuccess: ((List<Ingredient>) -> Unit),
-            onFailure: (String) -> Unit) {
+        ctx: Activity,
+        onSuccess: ((List<Ingredient>) -> Unit),
+        onFailure: (String) -> Unit
+    ) {
 
-        if(db == null)
+        if (db == null)
             db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries().build()
         Thread {
             var ingredients: List<Ingredient>?

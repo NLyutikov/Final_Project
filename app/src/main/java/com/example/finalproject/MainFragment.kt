@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.toolbar.view.*
 import java.util.concurrent.TimeUnit
 
 const val LIST_TYPE = "LIST_TYPE"
-const val LIST_TYPE_RANDOM= 0
+const val LIST_TYPE_RANDOM = 0
 
 abstract class FragmentWithToolbar : Fragment() {
 
@@ -45,7 +45,7 @@ abstract class ListFragment : FragmentWithToolbar() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(arguments != null)
+        if (arguments != null)
             listType = (arguments as Bundle).getInt(LIST_TYPE, LIST_TYPE_RANDOM)
         adapter = BriefInfoAdapter(activity!! as MainActivity)
     }
@@ -64,7 +64,7 @@ abstract class ListFragment : FragmentWithToolbar() {
         refreshLayout.isRefreshing = true
 
         // only random list load another data, else refresh useless
-        if(listType == LIST_TYPE_RANDOM) {
+        if (listType == LIST_TYPE_RANDOM) {
             refreshLayout.setOnRefreshListener {
                 loadData()
             }
@@ -72,6 +72,7 @@ abstract class ListFragment : FragmentWithToolbar() {
 
         return view
     }
+
     abstract fun loadData()
 }
 
@@ -81,16 +82,6 @@ class MainFragment : ListFragment() {
     @SuppressLint("CheckResult", "ResourceAsColor")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.main_layout, container, false)
-
-        //Кнопку пока не трогать, я пока толком нормальне не настроил логику onClick, в MainActivity и из-за неё
-        // приложуха крашится, так что, перехода на страницу фильтрации пока нету
-
-        // see setToolbarActions
-
-//        view.toolbar_filter.setOnClickListener {
-//            (view.toolbar_filter.context as ClickCallback).onClick(view.toolbar_filter)
-//
-//        }
 
         val mealList = view.findViewById<RecyclerView>(R.id.main_recycler)
         mealList.adapter = adapter
@@ -140,7 +131,7 @@ class MainFragment : ListFragment() {
         return view
     }
 
-    override fun loadData(){
+    override fun loadData() {
     }
 
     private fun getRandomMealsAndShowThem() {
@@ -157,7 +148,7 @@ class MainFragment : ListFragment() {
     }
 }
 
-class FiltredListFragment: ListFragment() {
+class FiltredListFragment : ListFragment() {
 
     val filter: MealFilter = MealFilter()
 
@@ -178,7 +169,6 @@ class FiltredListFragment: ListFragment() {
         )
     }
 }
-
 
 class FavoriteListFragment : ListFragment() {
 
@@ -201,5 +191,3 @@ class FavoriteListFragment : ListFragment() {
         )
     }
 }
-
-
