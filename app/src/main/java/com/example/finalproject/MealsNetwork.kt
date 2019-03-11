@@ -62,56 +62,59 @@ data class MealNetwork(
     val strMeasure19: String? = null,
     val strMeasure20: String? = null,
     var isBookmarked: Boolean? = false
+) {
+    fun toUi(): Meal {
+        return Meal(
+            id = idMeal,
+            name = strMeal,
+            category = strCategory,
+            area = strArea,
+            instructions = strInstructions,
+            img = strMealThumb,
+            tags = strTags,
+            youtube = strYoutube,
+            ingredients = listOf(
+                Ingredients(strIngredient1, strMeasure1),
+                Ingredients(strIngredient2, strMeasure2),
+                Ingredients(strIngredient4, strMeasure4),
+                Ingredients(strIngredient3, strMeasure3),
+                Ingredients(strIngredient5, strMeasure5),
+                Ingredients(strIngredient6, strMeasure6),
+                Ingredients(strIngredient7, strMeasure7),
+                Ingredients(strIngredient8, strMeasure8),
+                Ingredients(strIngredient9, strMeasure9),
+                Ingredients(strIngredient10, strMeasure10),
+                Ingredients(strIngredient11, strMeasure11),
+                Ingredients(strIngredient12, strMeasure12),
+                Ingredients(strIngredient13, strMeasure13),
+                Ingredients(strIngredient14, strMeasure14),
+                Ingredients(strIngredient15, strMeasure15),
+                Ingredients(strIngredient16, strMeasure16),
+                Ingredients(strIngredient17, strMeasure17),
+                Ingredients(strIngredient18, strMeasure18),
+                Ingredients(strIngredient19, strMeasure19),
+                Ingredients(strIngredient20, strMeasure20)
+            )
+        )
+    }
+}
+
+data class Meal(
+    val id: Int,
+    val name: String,
+    val category: String,
+    val area: String,
+    val instructions: String,
+    val img: String?,
+    val tags: String?,
+    val youtube: String?,
+    val ingredients: List<Ingredients>
 )
-//{
-//    fun toUi(): Meal {
-//        return Meal(id = idMeal,
-//            name = strMeal,
-//            category = strCategory,
-//            area = strArea,
-//            instructions = strInstructions,
-//            img = strMealThumb,
-//            tags = strTags,
-//            youtube = strYoutube,
-//            ingredients = listOf(
-//                listOf(strIngredient1, strMeasure1),
-//                listOf(strIngredient2, strMeasure2),
-//                listOf(strIngredient3, strMeasure3),
-//                listOf(strIngredient4, strMeasure4),
-//                listOf(strIngredient5, strMeasure5),
-//                listOf(strIngredient6, strMeasure6),
-//                listOf(strIngredient7, strMeasure7),
-//                listOf(strIngredient8, strMeasure8),
-//                listOf(strIngredient9, strMeasure9),
-//                listOf(strIngredient10, strMeasure10),
-//                listOf(strIngredient11, strMeasure11),
-//                listOf(strIngredient12, strMeasure12),
-//                listOf(strIngredient13, strMeasure13),
-//                listOf(strIngredient14, strMeasure14),
-//                listOf(strIngredient15, strMeasure15),
-//                listOf(strIngredient16, strMeasure16),
-//                listOf(strIngredient17, strMeasure17),
-//                listOf(strIngredient18, strMeasure18),
-//                listOf(strIngredient19, strMeasure19),
-//                listOf(strIngredient20, strMeasure20)
-//            )
-//        )
-//    }
-//}
 
-//data class Meal(
-//    val id: String,
-//    val name: String,
-//    val category: String,
-//    val area: String,
-//    val instructions: String,
-//    val img: String,
-//    val tags: String,
-//    val youtube: String,
-//    val ingredients: List<List<String>>
-//)
-
-
+data class Ingredients(
+    val ingredient: String?,
+    val measure: String?
+)
 
 
 @Dao
@@ -139,14 +142,14 @@ interface LocalDao {
 }
 
 @Database(entities = [Ingredient::class, MealNetwork::class], version = 1)
-abstract class MealsDatabase: RoomDatabase() {
+abstract class MealsDatabase : RoomDatabase() {
     abstract fun getLocalDao(): LocalDao
 }
 
 data class RemoteResponse<T>(val meals: List<T>)
 
 @Entity(tableName = LocalDao.TABLE_INGREDIENT)
-data class Ingredient (
+data class Ingredient(
     @PrimaryKey(autoGenerate = true) val idIngredient: Int,
     val strIngredient: String,
     val measure: String?
