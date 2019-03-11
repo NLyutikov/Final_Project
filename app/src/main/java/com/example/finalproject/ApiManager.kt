@@ -124,22 +124,14 @@ object ApiManager {
         }.start()
     }
 
-    fun updateFavorite(ctx: Activity, meal: MealNetwork) {
+    fun updateFavorite(ctx: Activity, meal: MealNetwork, checkBox: Boolean) {
         Thread {
-
             if (db == null)
                 db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries()
                     .build()
 
-            if (meal.strCategory == null)
-                meal.strCategory = ""
-            if (meal.strArea == null)
-                meal.strArea = ""
-            if (meal.strInstructions == null)
-                meal.strInstructions = ""
-
-            meal.isBookmarked = if (meal.isBookmarked == null) true else !(meal.isBookmarked as Boolean)
-            if (meal.isBookmarked as Boolean)
+            //meal.isBookmarked = if (meal.isBookmarked == null) true else !(meal.isBookmarked as Boolean)
+            if (checkBox)
                 db!!.getLocalDao().addMeals(meal)
             else
                 db!!.getLocalDao().removeMeals(meal)

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,6 +74,7 @@ abstract class ListFragment : FragmentWithToolbar() {
 }
 
 
+@Suppress("DEPRECATION")
 class MainFragment : ListFragment() {
 
     @SuppressLint("CheckResult", "ResourceAsColor")
