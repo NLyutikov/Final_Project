@@ -88,7 +88,7 @@ class MainFragment : ListFragment() {
 
 //        view.toolbar_filter.setOnClickListener {
 //            (view.toolbar_filter.context as ClickCallback).onClick(view.toolbar_filter)
-//            Log.d("chck", toolbar_filter.context.toString())
+//
 //        }
 
         val mealList = view.findViewById<RecyclerView>(R.id.main_recycler)

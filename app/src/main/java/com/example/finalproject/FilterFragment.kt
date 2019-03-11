@@ -1,6 +1,5 @@
 package com.example.finalproject
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
@@ -137,7 +136,6 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 }
 
 
-@SuppressLint("ResourceType")
 fun createChips(
     ctx: MainActivity,
     item: Ingredient,
@@ -147,11 +145,12 @@ fun createChips(
     if (selectedIngredients.contains(item))
         return
 
+
     val newChip = Chip(ctx)
     newChip.text = item.strIngredient
     newChip.isClickable = true
     newChip.isCheckable = false
-    newChip.setChipDrawable(ChipDrawable.createFromResource(ctx, R.layout.chip_item))
+    newChip.setChipDrawable(ChipDrawable.createFromResource(ctx, R.xml.ship_item))
     selectedIngredients.add(item)
 
     newChip.setOnCloseIconClickListener {
