@@ -20,7 +20,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BriefInfoAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_brief_info, parent, false)
-        return ViewHolder(view)
+        return BriefInfoAdapter.ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -34,14 +34,16 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         holder.category.text = data!![pos].strCategory
         Picasso.get().load(data!![pos].strMealThumb).into(holder.mealImg)
         holder.itemView.setOnClickListener {
-            ctx.toFragment(FRAGMENT_DETAIL, {
+            ctx.toFragment(FRAGMENT_DETAIL) {
                 (it as DetailFragment).meal = data!![pos]
-            })
+            }
         }
-        holder.btnFavorite.setOnClickListener {
-            ApiManager.updateFavorite(ctx, data!![pos])
-        }
+        holder.btnFavorite.setOnCheckedChangeListener { btnView, isChecked ->
+            btnView.setOnClickListener {
+                ApiManager.updateFavorite(ctx, data!![pos], isChecked)
+            }
 
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -50,6 +52,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         val category: TextView
         val mealImg: ImageView
         val btnFavorite: AppCompatCheckBox
+
         init {
             name = view.findViewById(R.id.meal_name)
             area = view.findViewById(R.id.meal_area)

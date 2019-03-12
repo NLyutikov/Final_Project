@@ -7,20 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
 import kotlinx.android.synthetic.main.main_layout.view.*
-
-const val RANDOM_MEALS_SIZE = 10
-
+import kotlinx.android.synthetic.main.toolbar.view.*
+import java.util.concurrent.TimeUnit
 
 const val LIST_TYPE = "LIST_TYPE"
-const val LIST_TYPE_RANDOM= 0
-
+const val LIST_TYPE_RANDOM = 0
 
 abstract class FragmentWithToolbar : Fragment() {
 
@@ -44,7 +45,7 @@ abstract class ListFragment : FragmentWithToolbar() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(arguments != null)
+        if (arguments != null)
             listType = (arguments as Bundle).getInt(LIST_TYPE, LIST_TYPE_RANDOM)
         adapter = BriefInfoAdapter(activity!! as MainActivity)
     }
@@ -63,7 +64,7 @@ abstract class ListFragment : FragmentWithToolbar() {
         refreshLayout.isRefreshing = true
 
         // only random list load another data, else refresh useless
-        if(listType == LIST_TYPE_RANDOM) {
+        if (listType == LIST_TYPE_RANDOM) {
             refreshLayout.setOnRefreshListener {
                 loadData()
             }
@@ -71,25 +72,16 @@ abstract class ListFragment : FragmentWithToolbar() {
 
         return view
     }
+
     abstract fun loadData()
 }
 
-
+@Suppress("DEPRECATION")
 class MainFragment : ListFragment() {
 
     @SuppressLint("CheckResult", "ResourceAsColor")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.main_layout, container, false)
-
-        //Кнопку пока не трогать, я пока толком нормальне не настроил логику onClick, в MainActivity и из-за неё
-        // приложуха крашится, так что, перехода на страницу фильтрации пока нету
-
-        // see setToolbarActions
-
-//        view.toolbar_filter.setOnClickListener {
-//            (view.toolbar_filter.context as ClickCallback).onClick(view.toolbar_filter)
-//
-//        }
 
         val mealList = view.findViewById<RecyclerView>(R.id.main_recycler)
         mealList.adapter = adapter
@@ -103,7 +95,7 @@ class MainFragment : ListFragment() {
             getRandomMealsAndShowThem()
         }
 
-        /*
+
         Observable.create(ObservableOnSubscribe<String> { subscriber ->
             view.toolbar_search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -134,12 +126,12 @@ class MainFragment : ListFragment() {
                     }
                 )
             }
-*/
+
         setToolbarActions(view)
         return view
     }
 
-    override fun loadData(){
+    override fun loadData() {
     }
 
     private fun getRandomMealsAndShowThem() {
@@ -156,8 +148,7 @@ class MainFragment : ListFragment() {
     }
 }
 
-
-class FiltredListFragment: ListFragment() {
+class FiltredListFragment : ListFragment() {
 
     val filter: MealFilter = MealFilter()
 
@@ -178,7 +169,6 @@ class FiltredListFragment: ListFragment() {
         )
     }
 }
-
 
 class FavoriteListFragment : ListFragment() {
 
@@ -201,5 +191,3 @@ class FavoriteListFragment : ListFragment() {
         )
     }
 }
-
-

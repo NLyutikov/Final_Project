@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.room.Room
 import retrofit2.Call
@@ -38,6 +39,30 @@ object ApiManager {
         })
     }
 
+    fun getSearchMeals(
+        activity: FragmentActivity?,
+        text: String,
+        onSuccess: (List<MealNetwork>) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        apiServise.getSearchMeal(text).enqueue(object : Callback<MealsNetwork> {
+            override fun onFailure(call: Call<MealsNetwork>, t: Throwable) {
+                onFailure.invoke(t.toString())
+            }
+
+            override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                if (response.body()?.meals == null) {
+                    Toast.makeText(
+                        activity,
+                        "Sorry, there are no dishes with this combination of letters.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    onSuccess.invoke(response.body()!!.meals)
+                }
+            }
+        })
+    }
 
     fun getMeals(
         activity: FragmentActivity?,
@@ -95,11 +120,12 @@ object ApiManager {
     }
 
     fun getIngredients(
-            ctx: Activity,
-            onSuccess: ((List<Ingredient>) -> Unit),
-            onFailure: (String) -> Unit) {
+        ctx: Activity,
+        onSuccess: ((List<Ingredient>) -> Unit),
+        onFailure: (String) -> Unit
+    ) {
 
-        if(db == null)
+        if (db == null)
             db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries().build()
         Thread {
             var ingredients: List<Ingredient>?
@@ -124,22 +150,14 @@ object ApiManager {
         }.start()
     }
 
-    fun updateFavorite(ctx: Activity, meal: MealNetwork) {
+    fun updateFavorite(ctx: Activity, meal: MealNetwork, checkBox: Boolean) {
         Thread {
-
             if (db == null)
                 db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries()
                     .build()
 
-            if (meal.strCategory == null)
-                meal.strCategory = ""
-            if (meal.strArea == null)
-                meal.strArea = ""
-            if (meal.strInstructions == null)
-                meal.strInstructions = ""
-
-            meal.isBookmarked = if (meal.isBookmarked == null) true else !(meal.isBookmarked as Boolean)
-            if (meal.isBookmarked as Boolean)
+            //meal.isBookmarked = if (meal.isBookmarked == null) true else !(meal.isBookmarked as Boolean)
+            if (checkBox)
                 db!!.getLocalDao().addMeals(meal)
             else
                 db!!.getLocalDao().removeMeals(meal)
