@@ -13,5 +13,5 @@ interface ApiService {
     fun getMealByIngredients(@Query("i")ing: String):Call<MealsNetwork>
 
     @GET("list.php?i=list")
-    fun getIngradients(): Call<RemoteResponse<Ingredient>>
+    fun getIngredients(): Call<RemoteResponse<Ingredient>>
 }

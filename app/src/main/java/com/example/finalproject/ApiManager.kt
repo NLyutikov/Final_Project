@@ -104,7 +104,7 @@ object ApiManager {
         Thread {
             var ingredients: List<Ingredient>?
             try {
-                val remoteResponse = apiServise.getIngradients().execute()
+                val remoteResponse = apiServise.getIngredients().execute()
                 //if (!remoteResponse.isSuccessful || remoteResponse.body() == null || remoteResponse.body()!!.meals.isNullOrEmpty())
 
                 ingredients = remoteResponse.body()!!.meals
