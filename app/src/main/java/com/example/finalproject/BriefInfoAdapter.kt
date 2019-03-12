@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,7 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
             }
 
         }
+        holder.btnFavorite.isChecked = data!![pos].isBookmarked ?: false
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -37,7 +37,7 @@ abstract class FragmentWithToolbar : Fragment() {
                     })
                 } else {
                     (activity as MainActivity).toFragment(FRAGMENT_FAVORITE, fun(newFrahment: Fragment) {
-                        (newFrahment as MainFragment).getFiltredAndShowThem()
+                        (newFrahment as MainFragment).getRandomMealsAndShowThem()
                     })
                 }
             }
