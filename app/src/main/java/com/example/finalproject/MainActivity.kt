@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import java.lang.Exception
 
 const val FRAGMENT_FILTER = 92
 const val FRAGMENT_FILTRED_LIST = 94
@@ -30,14 +31,22 @@ class MainActivity : AppCompatActivity(), ClickCallback {
     }
 
     fun toFragment(fragmentId: Int = 0, setParams: ((fr: Fragment) -> Unit)? = null) {
-        currentFragment = when (fragmentId) {
-            FRAGMENT_FILTER -> Filter()
-            FRAGMENT_FILTRED_LIST -> FiltredListFragment()
-            FRAGMENT_DETAIL -> DetailFragment()
-            FRAGMENT_FAVORITE -> FavoriteListFragment()
-            PREV_LIST_FRAGMENT -> currentListFragment
-            else -> MainFragment()
+
+        when {
+            fragmentId == FRAGMENT_FILTER -> currentFragment = Filter()
+            fragmentId == FRAGMENT_FILTRED_LIST -> {
+                if (currentFragment !is MainFragment)
+                    currentFragment = MainFragment()
+            }
+            fragmentId == FRAGMENT_DETAIL -> currentFragment = DetailFragment()
+            fragmentId == FRAGMENT_FAVORITE -> {
+                if (currentFragment !is MainFragment)
+                    currentFragment = MainFragment()
+            }
+            fragmentId == PREV_LIST_FRAGMENT -> currentFragment = currentListFragment
+            else -> currentFragment = MainFragment()
         }
+
 
         setParams?.invoke(currentFragment)
         if (currentFragment is ListFragment)

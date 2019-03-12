@@ -29,8 +29,18 @@ abstract class FragmentWithToolbar : Fragment() {
         view.findViewById<ImageButton>(R.id.toolbar_filter)?.setOnClickListener {
             (activity as MainActivity).toFragment(FRAGMENT_FILTER)
         }
-        view.findViewById<CheckBox>(R.id.toolbar_favorites)?.setOnClickListener {
-            (activity as MainActivity).toFragment(FRAGMENT_FAVORITE)
+        view.findViewById<CheckBox>(R.id.toolbar_favorites)?.setOnCheckedChangeListener { buttonView, isChecked ->
+            run {
+                if ((activity as MainActivity).currentFragment is Filter) {
+                    (activity as MainActivity).toFragment(FRAGMENT_FAVORITE, fun(newFrahment: Fragment) {
+                        (newFrahment as MainFragment).getFiltredAndShowThem()
+                    })
+                } else {
+                    (activity as MainActivity).toFragment(FRAGMENT_FAVORITE, fun(newFrahment: Fragment) {
+                        (newFrahment as MainFragment).getFiltredAndShowThem()
+                    })
+                }
+            }
         }
     }
 }
@@ -134,7 +144,7 @@ class MainFragment : ListFragment() {
     override fun loadData() {
     }
 
-    private fun getRandomMealsAndShowThem() {
+    fun getRandomMealsAndShowThem() {
         ApiManager.getRandomMeals(
             onSuccess = { meals ->
                 adapter.setMeals(meals)
@@ -146,13 +156,8 @@ class MainFragment : ListFragment() {
             }
         )
     }
-}
 
-class FiltredListFragment : ListFragment() {
-
-    val filter: MealFilter = MealFilter()
-
-    override fun loadData() {
+    fun getFiltredAndShowThem(filter: MealFilter = MealFilter(favorite = true)) {
         ApiManager.getMeals(
             activity = activity,
             filter = filter,
@@ -168,26 +173,7 @@ class FiltredListFragment : ListFragment() {
             }
         )
     }
+
 }
 
-class FavoriteListFragment : ListFragment() {
 
-    val filter: MealFilter = MealFilter(favorite = true)
-
-    override fun loadData() {
-        ApiManager.getMeals(
-            activity = activity,
-            filter = filter,
-            onSuccess = { meals ->
-                adapter.setMeals(meals)
-                refreshLayout.isRefreshing = false
-
-            },
-            onFailure = { errorMessage ->
-                Toast.makeText(activity, resources.getString(R.string.err_with_descr, errorMessage), Toast.LENGTH_LONG)
-                    .show()
-                refreshLayout.isRefreshing = false
-            }
-        )
-    }
-}

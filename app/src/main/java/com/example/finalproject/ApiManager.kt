@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.room.Room

@@ -85,7 +85,7 @@ class Filter : FragmentWithToolbar() {
                     .show()
             } else {
                 (activity as MainActivity).toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment) {
-                    (newFragment as FiltredListFragment).filter.ingredients = selectedIngredients
+                    (newFragment as MainFragment).getFiltredAndShowThem(MealFilter(selectedIngredients))
                 })
             }
 
