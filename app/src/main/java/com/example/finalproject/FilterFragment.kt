@@ -1,9 +1,12 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.finalproject
 
 import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
@@ -19,7 +23,12 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 
 
-class Filter : FragmentWithToolbar() {
+class FilterFragment : Fragment() {
+
+    companion object {
+        const val tag = "filter_fragment"
+        const val MEALS_KEY = "meals_key"
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.filter_layout, container, false)
@@ -79,14 +88,13 @@ class Filter : FragmentWithToolbar() {
             if (selectedIngredients.isEmpty()) {
                 Snackbar.make(
                     view.findViewById(R.id.go_filter),
-                    "please, select some ingredients",
+                    "Please, select some ingredients",
                     Snackbar.LENGTH_LONG
                 )
                     .show()
             } else {
-                (activity as MainActivity).toFragment(FRAGMENT_FILTRED_LIST, fun(newFragment) {
-                    (newFragment as MainFragment).getFiltredAndShowThem(MealFilter(selectedIngredients))
-                })
+                Log.d("Check", selectedIngredients[0].strIngredient)
+                (activity as ClickCallback).toFragment(MainFragment.tag)
             }
 
         }
@@ -128,13 +136,11 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
             val chips = (ctx as MainActivity).findViewById<ChipGroup>(R.id.chip_group)
 
             setOnClickListener {
-
                 createChips(ctx, item)
             }
         }
     }
 }
-
 
 fun createChips(
     ctx: MainActivity,
@@ -148,7 +154,7 @@ fun createChips(
 
     val newChip = Chip(ctx)
     newChip.text = item.strIngredient
-    newChip.isClickable = true
+    newChip.isClickable = false
     newChip.isCheckable = false
     newChip.setChipDrawable(ChipDrawable.createFromResource(ctx, R.xml.ship_item))
     selectedIngredients.add(item)

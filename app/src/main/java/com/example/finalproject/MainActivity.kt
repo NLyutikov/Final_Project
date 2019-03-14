@@ -1,78 +1,49 @@
 package com.example.finalproject
 
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import java.lang.Exception
+import androidx.fragment.app.FragmentActivity
 
-const val FRAGMENT_FILTER = 92
-const val FRAGMENT_FILTRED_LIST = 94
-const val FRAGMENT_DETAIL = 84
-const val FRAGMENT_FAVORITE = 88
+class MainActivity : FragmentActivity(), ClickCallback {
 
-const val PREV_LIST_FRAGMENT = -2
-
-
-class MainActivity : AppCompatActivity(), ClickCallback {
-
-    var currentFragment: Fragment = MainFragment()
-        private set(value) {
-            field = value
-        }
-
-    private lateinit var currentListFragment: ListFragment
+    private lateinit var currentFragment: Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        toFragment(0)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragments, MainFragment()).commit()
     }
 
-    fun toFragment(fragmentId: Int = 0, setParams: ((fr: Fragment) -> Unit)? = null) {
-
-        when {
-            fragmentId == FRAGMENT_FILTER -> currentFragment = Filter()
-            fragmentId == FRAGMENT_FILTRED_LIST -> {
-                if (currentFragment !is MainFragment)
-                    currentFragment = MainFragment()
-            }
-            fragmentId == FRAGMENT_DETAIL -> currentFragment = DetailFragment()
-            fragmentId == FRAGMENT_FAVORITE -> {
-                if (currentFragment !is MainFragment)
-                    currentFragment = MainFragment()
-            }
-            fragmentId == PREV_LIST_FRAGMENT -> currentFragment = currentListFragment
+    override fun toFragment(fragmentId: String, setParams: ((meal: List<MealNetwork>) -> Unit)?) {
+        when (fragmentId) {
+            FilterFragment.tag -> currentFragment = FilterFragment()
+            MainFragment.tag -> currentFragment = MainFragment()
             else -> currentFragment = MainFragment()
         }
 
-
-        setParams?.invoke(currentFragment)
-        if (currentFragment is ListFragment)
-            currentListFragment = currentFragment as ListFragment
-
-        supportFragmentManager.beginTransaction().replace(R.id.fragments, currentFragment).commit()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragments, currentFragment)
+            .addToBackStack(fragmentId)
+            .commit()
     }
 
-    override fun onBackPressed() {
-        when {
-            currentFragment is DetailFragment -> toFragment(PREV_LIST_FRAGMENT)
-            currentFragment !is MainFragment -> toFragment()
-            else -> super.onBackPressed()
-        }
-
-    }
-
-    //  not working
-    override fun onClick(who: View) {
-        when (who.id) {
-            R.id.toolbar_favorites -> toFragment(FRAGMENT_FAVORITE)
-            R.id.toolbar_filter -> toFragment(FRAGMENT_FILTER)
-        }
+    override fun onClick(meal: MealNetwork) {
+        val transaction = supportFragmentManager.beginTransaction()
+        supportFragmentManager.popBackStack()
+        val fragment = DetailFragment()
+        val fragmentId = R.id.fragments
+        transaction.replace(fragmentId, fragment)
+        val bundle = Bundle()
+        bundle.putSerializable(DetailFragment.MEAL_KEY, meal)
+        fragment.arguments = bundle
+        transaction.addToBackStack(DetailFragment.tag)
+        transaction.commit()
     }
 }
 
 interface ClickCallback {
-    fun onClick(who: View)
+    fun onClick(meal: MealNetwork)
+    fun toFragment(fragmentId: String, setParams: ((meal: List<MealNetwork>) -> Unit)? = null)
 }

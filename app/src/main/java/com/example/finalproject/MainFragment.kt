@@ -1,95 +1,43 @@
 package com.example.finalproject
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.ImageButton
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.main_layout.view.*
 import kotlinx.android.synthetic.main.toolbar.view.*
 import java.util.concurrent.TimeUnit
 
-const val LIST_TYPE = "LIST_TYPE"
-const val LIST_TYPE_RANDOM = 0
+@Suppress("DEPRECATION")
+class MainFragment : Fragment() {
 
-abstract class FragmentWithToolbar : Fragment() {
-
-    protected fun setToolbarActions(view: View) {
-        view.findViewById<ImageButton>(R.id.toolbar_filter)?.setOnClickListener {
-            (activity as MainActivity).toFragment(FRAGMENT_FILTER)
-        }
-        view.findViewById<CheckBox>(R.id.toolbar_favorites)?.setOnCheckedChangeListener { buttonView, isChecked ->
-            run {
-                if ((activity as MainActivity).currentFragment is Filter) {
-                    (activity as MainActivity).toFragment(FRAGMENT_FAVORITE, fun(newFrahment: Fragment) {
-                        (newFrahment as MainFragment).getFiltredAndShowThem()
-                    })
-                } else {
-                    (activity as MainActivity).toFragment(FRAGMENT_FAVORITE, fun(newFrahment: Fragment) {
-                        (newFrahment as MainFragment).getRandomMealsAndShowThem()
-                    })
-                }
-            }
-        }
+    companion object {
+        const val tag = "main_fragment"
     }
-}
 
-abstract class ListFragment : FragmentWithToolbar() {
-
-    protected lateinit var refreshLayout: SwipeRefreshLayout
-    protected lateinit var adapter: BriefInfoAdapter
-    private var listType: Int = 0
-
+    private lateinit var refreshLayout: SwipeRefreshLayout
+    private lateinit var disposable: Disposable
+    private var randomMeals: List<MealNetwork>? = null
+    private var searchMeals: List<MealNetwork>? = null
+    private var isFavoritesCheck: Boolean = false
+    private var adapter = BriefInfoAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (arguments != null)
-            listType = (arguments as Bundle).getInt(LIST_TYPE, LIST_TYPE_RANDOM)
-        adapter = BriefInfoAdapter(activity!! as MainActivity)
+        retainInstance = true
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.main_layout, container, false)
-
-
-        val mealList = view.findViewById<RecyclerView>(R.id.main_recycler)
-        mealList.adapter = adapter
-        mealList.layoutManager = LinearLayoutManager(activity)
-        refreshLayout = view.refresh
-
-
-        loadData()
-        refreshLayout.isRefreshing = true
-
-        // only random list load another data, else refresh useless
-        if (listType == LIST_TYPE_RANDOM) {
-            refreshLayout.setOnRefreshListener {
-                loadData()
-            }
-        }
-
-        return view
-    }
-
-    abstract fun loadData()
-}
-
-@Suppress("DEPRECATION")
-class MainFragment : ListFragment() {
-
-    @SuppressLint("CheckResult", "ResourceAsColor")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.main_layout, container, false)
 
@@ -98,15 +46,13 @@ class MainFragment : ListFragment() {
         mealList.layoutManager = LinearLayoutManager(activity)
         refreshLayout = view.refresh
 
-        getRandomMealsAndShowThem()
-        refreshLayout.isRefreshing = true
+        whatToDisplay(view)
 
         refreshLayout.setOnRefreshListener {
-            getRandomMealsAndShowThem()
+            getRandomMealsAndShowThem(view)
         }
 
-
-        Observable.create(ObservableOnSubscribe<String> { subscriber ->
+        disposable = Observable.create(ObservableOnSubscribe<String> { subscriber ->
             view.toolbar_search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     subscriber.onNext(query!!)
@@ -122,58 +68,129 @@ class MainFragment : ListFragment() {
             .map { text -> text.toLowerCase().trim() }
             .debounce(250, TimeUnit.MILLISECONDS)
             .distinctUntilChanged()
-            .filter { text -> text.isNotBlank() }
-            .filter { text -> text.length > 1 }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { text ->
-                ApiManager.getSearchMeals(
-                    activity = activity,
-                    text = text,
-                    onSuccess = { meals ->
-                        adapter.setMeals(meals)
-                    },
-                    onFailure = { errorMassege ->
-                        Snackbar.make(view, errorMassege, Snackbar.LENGTH_SHORT)
-                    }
-                )
+                if (text.isBlank()) {
+                    whatToDisplay(view)
+                }
+                if (text.length > 1) {
+                    ApiManager.getSearchMeals(
+                        activity = activity,
+                        text = text,
+                        onSuccess = { meals ->
+                            searchMeals = meals
+                            adapter.setMeals(searchMeals!!)
+                            refreshLayout.isEnabled = true
+                            view.toolbar_filter.isEnabled = true
+                        },
+                        onFailure = { errorMessage ->
+                            if (errorMessage == resources.getString(R.string.internet_error)) {
+                                Toast.makeText(
+                                    activity, "Oops, error: No internet connection",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                                getCheckResults(view, true)
+                            } else {
+                                Toast.makeText(activity, "errorMessage", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    )
+                }
             }
 
         setToolbarActions(view)
+
+        view.toolbar_search.isGone = isFavoritesCheck
+        view.toolbar_favorites.isChecked = isFavoritesCheck
+
         return view
     }
 
-    override fun loadData() {
+    override fun onDestroyView() {
+        super.onDestroyView()
+        disposable.dispose()
     }
 
-    fun getRandomMealsAndShowThem() {
+    private fun setToolbarActions(view: View) {
+        view.toolbar_filter.setOnClickListener {
+            (activity as ClickCallback).toFragment(FilterFragment.tag)
+        }
+        view.toolbar_favorites.setOnCheckedChangeListener { _, isChecked ->
+            getCheckResults(view, isChecked)
+            if (isChecked) {
+                getFavoritesAndShowThem(view)
+                refreshLayout.isEnabled = false
+            } else {
+                refreshLayout.isEnabled = true
+                getRandomMealsAndShowThem(view)
+            }
+        }
+    }
+
+    private fun getRandomMealsAndShowThem(view: View) {
         ApiManager.getRandomMeals(
             onSuccess = { meals ->
                 adapter.setMeals(meals)
+                randomMeals = meals
                 refreshLayout.isRefreshing = false
             },
             onFailure = { errorMessage ->
-                Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
-                refreshLayout.isRefreshing = false
+                if (errorMessage == resources.getString(R.string.internet_error)) {
+                    Toast.makeText(activity, "Oops, error: No internet connection", Toast.LENGTH_LONG).show()
+                    view.toolbar_filter.isEnabled = false
+                    getCheckResults(view, true)
+                    refreshLayout.isRefreshing = false
+                } else {
+                    Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
+                }
             }
         )
     }
 
-    fun getFiltredAndShowThem(filter: MealFilter = MealFilter(favorite = true)) {
-        ApiManager.getMeals(
+    private fun getFavoritesAndShowThem(view: View) {
+        ApiManager.getFavoriteMeals(
             activity = activity,
-            filter = filter,
             onSuccess = { meals ->
-                adapter.setMeals(meals)
-                refreshLayout.isRefreshing = false
-
-            },
-            onFailure = { errorMessage ->
-                Toast.makeText(activity, resources.getString(R.string.err_with_descr, errorMessage), Toast.LENGTH_LONG)
-                    .show()
-                refreshLayout.isRefreshing = false
+                if (meals.isEmpty()) {
+                    getCheckResults(view, false)
+                    Toast.makeText(activity, "Your favorites list is empty", Toast.LENGTH_LONG).show()
+                } else {
+                    adapter.setMeals(meals)
+                    refreshLayout.isRefreshing = false
+                }
             }
         )
     }
 
+//    private fun getMealsByIngredientsAndShowThem() {
+//        ApiManager.getMealsByIngredients(
+//            activity = activity,
+//            ingredient = selectedIngredients[0].strIngredient,
+//            onFailure = { errorMessage -> },
+//            onSuccess = { meals ->
+//                adapter.setMeals(meals)
+//            }
+//        )
+//    }
+
+    private fun getCheckResults(view: View, check: Boolean) {
+        isFavoritesCheck = check
+        view.toolbar_search.isGone = check
+        view.toolbar_favorites.isChecked = check
+    }
+
+    private fun whatToDisplay(view: View) {
+        when {
+            isFavoritesCheck -> {
+                getCheckResults(view, isFavoritesCheck)
+                getFavoritesAndShowThem(view)
+            }
+            randomMeals == null -> {
+                getRandomMealsAndShowThem(view)
+                refreshLayout.isRefreshing = true
+            }
+            else -> adapter.setMeals(randomMeals!!)
+        }
+    }
 }
-
-

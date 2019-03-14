@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import androidx.room.*
+import java.io.Serializable
 
 data class MealsNetwork(
     val meals: List<MealNetwork>
@@ -61,8 +62,8 @@ data class MealNetwork(
     val strMeasure18: String? = null,
     val strMeasure19: String? = null,
     val strMeasure20: String? = null,
-    var isBookmarked: Boolean? = false
-) {
+    var isBookmarked: Boolean
+) : Serializable {
     fun toUi(): Meal {
         return Meal(
             id = idMeal,
@@ -94,7 +95,8 @@ data class MealNetwork(
                 Ingredients(strIngredient18, strMeasure18),
                 Ingredients(strIngredient19, strMeasure19),
                 Ingredients(strIngredient20, strMeasure20)
-            )
+            ),
+            like = isBookmarked
         )
     }
 }
@@ -108,7 +110,8 @@ data class Meal(
     val img: String?,
     val tags: String?,
     val youtube: String?,
-    val ingredients: List<Ingredients>
+    val ingredients: List<Ingredients>,
+    var like: Boolean
 )
 
 data class Ingredients(

@@ -1,15 +1,17 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.finalproject
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
-class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
+class BriefInfoAdapter : RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
 
     private var data: List<MealNetwork>? = null
 
@@ -18,41 +20,36 @@ class BriefInfoAdapter(private val ctx: MainActivity) : RecyclerView.Adapter<Bri
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BriefInfoAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_brief_info, parent, false)
-        return BriefInfoAdapter.ViewHolder(view)
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return data?.size ?: 0
     }
 
-    override fun onBindViewHolder(holder: BriefInfoAdapter.ViewHolder, pos: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
 
         holder.name.text = data!![pos].strMeal
         holder.area.text = data!![pos].strArea
         holder.category.text = data!![pos].strCategory
         Picasso.get().load(data!![pos].strMealThumb).into(holder.mealImg)
+        holder.btnFavorite.isChecked = data!![pos].isBookmarked
         holder.itemView.setOnClickListener {
-            ctx.toFragment(FRAGMENT_DETAIL) {
-                (it as DetailFragment).meal = data!![pos]
-            }
+            (holder.view.context as ClickCallback).onClick(data!![pos])
         }
-        holder.btnFavorite.setOnCheckedChangeListener { btnView, isChecked ->
-            btnView.setOnClickListener {
-                ApiManager.updateFavorite(ctx, data!![pos], isChecked)
-            }
-
+        holder.btnFavorite.setOnCheckedChangeListener { _, isChecked ->
+            ApiManager.updateFavorite(holder.view.context, data!![pos], isChecked)
         }
-        holder.btnFavorite.isChecked = data!![pos].isBookmarked ?: false
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView
         val area: TextView
         val category: TextView
         val mealImg: ImageView
-        val btnFavorite: AppCompatCheckBox
+        val btnFavorite: CheckBox
 
         init {
             name = view.findViewById(R.id.meal_name)

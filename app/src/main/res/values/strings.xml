@@ -10,4 +10,7 @@
     <string name="instructions_title">Instructions:</string>
     <string name="ingredients_title">Ingredients:</string>
     <string name="search_hint">Enter dish name</string>
+    <string name="internet_error">java.net.UnknownHostException: Unable to resolve host \"www.themealdb.com\": No
+        address associated with hostname
+    </string>
 </resources>

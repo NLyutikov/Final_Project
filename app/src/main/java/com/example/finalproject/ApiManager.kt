@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
@@ -10,6 +11,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"
 
@@ -35,6 +37,7 @@ object ApiManager {
             }
 
             override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                Log.d("Check", response.body()!!.meals.size.toString())
                 onSuccess.invoke(response.body()!!.meals)
             }
         })
@@ -65,59 +68,45 @@ object ApiManager {
         })
     }
 
-    fun getMeals(
+    fun getMealsByIngredients(
         activity: FragmentActivity?,
-        filter: MealFilter,
-        onSuccess: ((List<MealNetwork>) -> Unit),
+        ingredient: String,
+        onSuccess: (List<MealNetwork>) -> Unit,
         onFailure: (String) -> Unit
     ) {
-
-        Thread {
-            try {
-
-                when {
-                    (filter.ingredients.isEmpty() && filter.searchWord.isEmpty() && !filter.favorite) -> {
-                        activity?.runOnUiThread {
-                            onFailure.invoke(
-                                activity?.resources?.getString(R.string.err_empty_filter) ?: ""
-                            )
-                        }
-
-                    }
-
-                    (filter.favorite) -> {
-
-                        if (db == null)
-                            db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME)
-                                .allowMainThreadQueries().build()
-
-                        val localResponse = db!!.getLocalDao().getMeals()
-                        activity?.runOnUiThread { onSuccess.invoke(localResponse) }
-
-                    }
-
-                    else -> {
-                        val response =
-                            when {
-                                //filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients.joinToString(separator = " ") { it.strIngredient}).execute()
-                                filter.searchWord.isEmpty() -> apiServise.getMealByIngredients(filter.ingredients[0].strIngredient).execute()
-                                else -> apiServise.getSearchMeal(filter.searchWord).execute()
-                            }
-
-                        if (response.isSuccessful) {
-                            activity?.runOnUiThread {
-                                onSuccess.invoke(if (response.body() == null || response.body()!!.meals.isNullOrEmpty()) ArrayList() else response.body()!!.meals)
-                            }
-                        } else {
-                            activity?.runOnUiThread { onFailure.invoke(response.errorBody()!!.string()) }
-                        }
-                    }
-                }
-            } catch (e: java.lang.Exception) {
-                activity?.runOnUiThread { onFailure.invoke(e.toString()) }
+        apiServise.getMealByIngredients(ingredient).enqueue(object : Callback<MealsNetwork> {
+            override fun onFailure(call: Call<MealsNetwork>, t: Throwable) {
+                onFailure.invoke(t.toString())
             }
 
-        }.start()
+            override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                val list = LinkedList<MealNetwork>()
+                for (i in 0 until response.body()!!.meals.size) {
+                    apiServise.getSearchMeal(response.body()!!.meals[i].strMeal)
+                        .enqueue(object : Callback<MealsNetwork> {
+                            override fun onFailure(call: Call<MealsNetwork>, t: Throwable) {
+                            }
+
+                            override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
+                                list.add(response.body()?.meals!![0])
+                            }
+                        })
+                }
+                onSuccess.invoke(list)
+            }
+        })
+    }
+
+    fun getFavoriteMeals(
+        activity: FragmentActivity?,
+        onSuccess: (List<MealNetwork>) -> Unit
+    ) {
+        if (db == null)
+            db = Room.databaseBuilder(activity!!, MealsDatabase::class.java, LocalDao.DB_NAME)
+                .allowMainThreadQueries().build()
+
+        val localResponse = db!!.getLocalDao().getMeals()
+        activity?.runOnUiThread { onSuccess.invoke(localResponse) }
     }
 
     fun getIngredients(
@@ -144,32 +133,25 @@ object ApiManager {
             if (ingredients.isNullOrEmpty())
                 ctx.runOnUiThread { onFailure.invoke("") }
             else {
-                ctx.runOnUiThread { onSuccess.invoke(ingredients as List<Ingredient>) }
+                ctx.runOnUiThread { onSuccess.invoke(ingredients) }
                 db!!.getLocalDao().addIngredients(*ingredients.toTypedArray())
             }
-
         }.start()
     }
 
-    fun updateFavorite(ctx: Activity, meal: MealNetwork, checkBox: Boolean) {
+    fun updateFavorite(ctx: Context, meal: MealNetwork, checkBox: Boolean) {
         Thread {
             if (db == null)
                 db = Room.databaseBuilder(ctx, MealsDatabase::class.java, LocalDao.DB_NAME).allowMainThreadQueries()
                     .build()
 
-            //meal.isBookmarked = if (meal.isBookmarked == null) true else !(meal.isBookmarked as Boolean)
-            if (checkBox)
+            if (checkBox) {
+                meal.isBookmarked = checkBox
                 db!!.getLocalDao().addMeals(meal)
-            else
+            } else {
                 db!!.getLocalDao().removeMeals(meal)
-
+                meal.isBookmarked = checkBox
+            }
         }.start()
     }
 }
-
-
-data class MealFilter(
-    var ingredients: ArrayList<Ingredient> = ArrayList(),
-    var searchWord: String = "",
-    var favorite: Boolean = false
-)
