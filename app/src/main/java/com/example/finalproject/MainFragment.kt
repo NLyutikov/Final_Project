@@ -86,24 +86,23 @@ class MainFragment : Fragment() {
                         onFailure = { errorMessage ->
                             if (errorMessage == resources.getString(R.string.internet_error)) {
                                 Toast.makeText(
-                                    activity, "Oops, error: No internet connection",
+                                    activity, getText(R.string.err_lose_connection),
                                     Toast.LENGTH_LONG
                                 )
                                     .show()
                                 getCheckResults(view, true)
                             } else {
-                                Toast.makeText(activity, "errorMessage", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    activity,
+                                    "${getText(R.string.err_with_descr)}$errorMessage",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
                     )
                 }
             }
-
         setToolbarActions(view)
-
-        view.toolbar_search.isGone = isFavoritesCheck
-        view.toolbar_favorites.isChecked = isFavoritesCheck
-
         return view
     }
 
@@ -137,12 +136,13 @@ class MainFragment : Fragment() {
             },
             onFailure = { errorMessage ->
                 if (errorMessage == resources.getString(R.string.internet_error)) {
-                    Toast.makeText(activity, "Oops, error: No internet connection", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, getText(R.string.err_lose_connection), Toast.LENGTH_LONG).show()
                     view.toolbar_filter.isEnabled = false
                     getCheckResults(view, true)
                     refreshLayout.isRefreshing = false
                 } else {
-                    Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "${getText(R.string.err_with_descr)}$errorMessage", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         )
@@ -154,7 +154,7 @@ class MainFragment : Fragment() {
             onSuccess = { meals ->
                 if (meals.isEmpty()) {
                     getCheckResults(view, false)
-                    Toast.makeText(activity, "Your favorites list is empty", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, getText(R.string.err_empty_favorites), Toast.LENGTH_LONG).show()
                 } else {
                     adapter.setMeals(meals)
                     refreshLayout.isRefreshing = false
@@ -163,20 +163,9 @@ class MainFragment : Fragment() {
         )
     }
 
-//    private fun getMealsByIngredientsAndShowThem() {
-//        ApiManager.getMealsByIngredients(
-//            activity = activity,
-//            ingredient = selectedIngredients[0].strIngredient,
-//            onFailure = { errorMessage -> },
-//            onSuccess = { meals ->
-//                adapter.setMeals(meals)
-//            }
-//        )
-//    }
-
     private fun getCheckResults(view: View, check: Boolean) {
         isFavoritesCheck = check
-        view.toolbar_search.isGone = check
+        view.card_toolbar_search.isGone = check
         view.toolbar_favorites.isChecked = check
     }
 

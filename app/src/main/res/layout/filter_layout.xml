@@ -5,46 +5,80 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
-    <EditText
+        tools:context=".MainActivity" android:id="@+id/constraintLayout">
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:id="@+id/chips_input"
+            android:id="@+id/chips_head"
+            android:background="@color/colorPrimaryDark"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:hint="@string/search"
-            android:inputType="text"
-            android:autofillHints="@string/search"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/go_filter"/>
+            app:layout_constraintEnd_toEndOf="parent"
+    >
+        <androidx.cardview.widget.CardView
+                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:id="@+id/card_chips_input"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/card_go_filter"
+                app:layout_constraintBottom_toTopOf="@+id/chip_group"
+        >
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorWhite"
+                    android:ems="10"
+                    android:id="@+id/chips_input"
+                    android:hint="@string/search"
+                    android:inputType="text"
+                    android:paddingHorizontal="4dp"
+                    android:autofillHints="@string/search"
+            />
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/card_go_filter"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/chip_group"
+        >
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter"
+                    android:id="@+id/go_filter"
+                    android:textColor="@color/colorBlack"
+                    android:background="@color/colorWhite"
+            />
+        </androidx.cardview.widget.CardView>
 
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/filter"
-            android:id="@+id/go_filter"
-            android:textColor="@color/colorBlack"
-            android:background="@color/colorWhite"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+        <com.google.android.material.chip.ChipGroup
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/chip_group"
+                android:layout_margin="8dp"
+                app:layout_constraintTop_toBottomOf="@id/card_chips_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.chip.ChipGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/chip_group"
-            android:layout_margin="8dp"
-            app:layout_constraintTop_toBottomOf="@id/chips_input"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:id="@+id/v_ingredients"
-            android:layout_margin="8dp"
-            app:layout_constraintTop_toBottomOf="@id/chip_group"
+            android:layout_marginHorizontal="30dp"
+            android:background="#DD8200"
+            app:layout_constraintTop_toBottomOf="@id/chips_head"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

@@ -16,11 +16,11 @@ class MainActivity : FragmentActivity(), ClickCallback {
             .replace(R.id.fragments, MainFragment()).commit()
     }
 
-    override fun toFragment(fragmentId: String, setParams: ((meal: List<MealNetwork>) -> Unit)?) {
-        when (fragmentId) {
-            FilterFragment.tag -> currentFragment = FilterFragment()
-            MainFragment.tag -> currentFragment = MainFragment()
-            else -> currentFragment = MainFragment()
+    override fun toFragment(fragmentId: String) {
+        currentFragment = when (fragmentId) {
+            FilterFragment.tag -> FilterFragment()
+            MainFragment.tag -> MainFragment()
+            else -> MainFragment()
         }
 
         supportFragmentManager.beginTransaction()
@@ -45,5 +45,5 @@ class MainActivity : FragmentActivity(), ClickCallback {
 
 interface ClickCallback {
     fun onClick(meal: MealNetwork)
-    fun toFragment(fragmentId: String, setParams: ((meal: List<MealNetwork>) -> Unit)? = null)
+    fun toFragment(fragmentId: String)
 }

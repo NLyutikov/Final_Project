@@ -6,7 +6,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,14 +19,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.snackbar.Snackbar
-
 
 class FilterFragment : Fragment() {
 
     companion object {
         const val tag = "filter_fragment"
-        const val MEALS_KEY = "meals_key"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,8 +32,6 @@ class FilterFragment : Fragment() {
             return view
 
         selectedIngredients.clear()
-        //for(chips in selectedIngredients)
-        //    createChips(activity as MainActivity, chips, view.findViewById(R.id.chipGroup))
 
         val ingredientAdapter = IngredientAdapter(activity as MainActivity)
 
@@ -52,25 +46,6 @@ class FilterFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-/*
-        retrofit.create(ApiService::class.java).getIngradients().enqueue(object: Callback<RemoteResponse<Ingredient>> {
-            override fun onFailure(call: Call<RemoteResponse<Ingredient>>, t: Throwable) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onResponse(
-                call: Call<RemoteResponse<Ingredient>>,
-                response: Response<RemoteResponse<Ingredient>>
-            ) {
-                ingredients = response.body()?.meals
-                ingredientAdapter.dataSet = ingredients?.slice(0..10)
-                view.findViewById<RecyclerView>(R.id.vIngredients).apply {
-                    adapter = ingredientAdapter
-                    layoutManager = LinearLayoutManager(activity)
-                }
-            }
-        })
-        */
 
         ApiManager.getIngredients(
             activity!!,
@@ -82,18 +57,22 @@ class FilterFragment : Fragment() {
                     layoutManager = LinearLayoutManager(activity)
                 }
             },
-            { errorMessage -> Toast.makeText(activity, "Oops, error: $errorMessage", Toast.LENGTH_LONG).show() })
+            { errorMessage ->
+                Toast.makeText(
+                    activity,
+                    "${getText(R.string.err_with_descr)}$errorMessage",
+                    Toast.LENGTH_LONG
+                ).show()
+            })
 
         view.findViewById<Button>(R.id.go_filter).setOnClickListener {
             if (selectedIngredients.isEmpty()) {
-                Snackbar.make(
-                    view.findViewById(R.id.go_filter),
-                    "Please, select some ingredients",
-                    Snackbar.LENGTH_LONG
-                )
-                    .show()
+                Toast.makeText(
+                    activity,
+                    getText(R.string.err_empty_filter),
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                Log.d("Check", selectedIngredients[0].strIngredient)
                 (activity as ClickCallback).toFragment(MainFragment.tag)
             }
 
@@ -102,9 +81,8 @@ class FilterFragment : Fragment() {
     }
 }
 
-
 var ingredients: List<Ingredient>? = null
-val selectedIngredients: ArrayList<Ingredient> = ArrayList<Ingredient>()
+val selectedIngredients: ArrayList<Ingredient> = ArrayList()
 
 
 class MyHolder(val view: View) : RecyclerView.ViewHolder(view)
@@ -133,7 +111,7 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 
         holder.view.apply {
             findViewById<TextView>(R.id.ingredient_title)?.text = item.strIngredient
-            val chips = (ctx as MainActivity).findViewById<ChipGroup>(R.id.chip_group)
+            (ctx as MainActivity).findViewById<ChipGroup>(R.id.chip_group)
 
             setOnClickListener {
                 createChips(ctx, item)
@@ -145,12 +123,11 @@ class IngredientAdapter(val ctx: Activity) : RecyclerView.Adapter<MyHolder>() {
 fun createChips(
     ctx: MainActivity,
     item: Ingredient,
-    viewWithChipsGroup: ChipGroup = ctx.findViewById<ChipGroup>(R.id.chip_group)
+    viewWithChipsGroup: ChipGroup = ctx.findViewById(R.id.chip_group)
 ) {
 
     if (selectedIngredients.contains(item))
         return
-
 
     val newChip = Chip(ctx)
     newChip.text = item.strIngredient

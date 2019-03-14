@@ -4,13 +4,16 @@
     <string name="search">search</string>
     <string name="favorite">favorite</string>
     <string name="filter">filter</string>
-    <string name="err_empty_filter">filter cannot be empty</string>
-    <string name="err_with_descr">Oops, error: %s</string>
+    <string name="err_empty_filter">Please, select some ingredients</string>
+    <string name="err_with_descr">Oops, error:</string>
+    <string name="err_empty_favorites">Your favorites list is empty</string>
+    <string name="err_lose_connection">Oops, error: No internet connection</string>
+    <string name="err_search_empty">Sorry, there are no dishes with this combination of letters</string>
     <string name="name">Mushroom &amp; Chestnut Rotolo</string>
     <string name="instructions_title">Instructions:</string>
     <string name="ingredients_title">Ingredients:</string>
     <string name="search_hint">Enter dish name</string>
-    <string name="internet_error">java.net.UnknownHostException: Unable to resolve host \"www.themealdb.com\": No
-        address associated with hostname
+    <string name="internet_error">java.net.UnknownHostException:
+        Unable to resolve host \"www.themealdb.com\": No address associated with hostname
     </string>
 </resources>

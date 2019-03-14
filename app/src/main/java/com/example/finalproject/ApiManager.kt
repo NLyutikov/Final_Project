@@ -2,7 +2,6 @@ package com.example.finalproject
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.room.Room
@@ -37,7 +36,6 @@ object ApiManager {
             }
 
             override fun onResponse(call: Call<MealsNetwork>, response: Response<MealsNetwork>) {
-                Log.d("Check", response.body()!!.meals.size.toString())
                 onSuccess.invoke(response.body()!!.meals)
             }
         })
@@ -58,7 +56,7 @@ object ApiManager {
                 if (response.body()?.meals == null) {
                     Toast.makeText(
                         activity,
-                        "Sorry, there are no dishes with this combination of letters.",
+                        activity?.getText(R.string.err_search_empty),
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
@@ -121,8 +119,6 @@ object ApiManager {
             var ingredients: List<Ingredient>?
             try {
                 val remoteResponse = apiServise.getIngredients().execute()
-                //if (!remoteResponse.isSuccessful || remoteResponse.body() == null || remoteResponse.body()!!.meals.isNullOrEmpty())
-
                 ingredients = remoteResponse.body()!!.meals
 
             } catch (e: Exception) {

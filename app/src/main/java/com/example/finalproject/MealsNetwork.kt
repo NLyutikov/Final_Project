@@ -6,11 +6,6 @@ import java.io.Serializable
 data class MealsNetwork(
     val meals: List<MealNetwork>
 )
-//{
-//    fun toUI(): Meal {
-//        return meals[0].toUi()
-//    }
-//}
 
 @Entity(tableName = LocalDao.TABLE_MEALS)
 data class MealNetwork(
@@ -119,7 +114,6 @@ data class Ingredients(
     val measure: String?
 )
 
-
 @Dao
 interface LocalDao {
     companion object {
@@ -157,5 +151,3 @@ data class Ingredient(
     val strIngredient: String,
     val measure: String?
 )
-
-

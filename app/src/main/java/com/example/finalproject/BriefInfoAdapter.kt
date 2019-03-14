@@ -30,7 +30,6 @@ class BriefInfoAdapter : RecyclerView.Adapter<BriefInfoAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-
         holder.name.text = data!![pos].strMeal
         holder.area.text = data!![pos].strArea
         holder.category.text = data!![pos].strCategory

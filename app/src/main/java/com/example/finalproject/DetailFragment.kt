@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_dish.view.*
 
-
 class DetailFragment : Fragment() {
-
     companion object {
         const val tag = "detail_fragment"
         const val MEAL_KEY = "full_info_meal"
@@ -35,10 +33,9 @@ class DetailFragment : Fragment() {
             }
         }
         view.full_info_favorites.setOnCheckedChangeListener { _, isChecked ->
-            thisMeal.isBookmarked = isChecked
+            toUI.like = isChecked
             ApiManager.updateFavorite(view.context, thisMeal, isChecked)
         }
-
         return view
     }
 }
